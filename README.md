@@ -16,6 +16,17 @@ Description: The Cassandra connector allows you to read and write to Cassandra. 
   then the process should be easier and better controlled.
 * Something in line with the previous point is that the db statements are raw queries, which again, are prone to maintenance errors.
 
+## Quill Notes
+
+Page: http://getquill.io/
+
+Description: Free/Libre Compile-time Language Integrated Queries for Scala
+
+
+
+
+
+
 
 
  
