@@ -3,6 +3,10 @@ Evaluation of Cassandra and Scala
 
 ## Alpakka-Cassandra Connector Notes
 
+Page: https://developer.lightbend.com/docs/alpakka/current/cassandra.html
+
+Description: The Cassandra connector allows you to read and write to Cassandra. You can query a stream of rows from CassandraSource or use prepared statements to insert or update with CassandraFlow or CassandraSink.
+
 * Akka Streams are first-class citizens.
 * Under the hood, it uses [https://github.com/datastax/java-driver](https://github.com/datastax/java-driver) as the driver.
 * There's no implicit support for binding case classes when building the db statements. 
