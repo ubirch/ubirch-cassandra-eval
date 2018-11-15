@@ -1,4 +1,4 @@
-package de.ubirch
+package com.ubirch
 
 object App {
   
