@@ -16,6 +16,7 @@ object QuillTypes extends App {
     implicit val decode: MappedEncoding[String, Country] = MappedEncoding[String, Country](Country(_))
     implicit val encode: MappedEncoding[Country, String] = MappedEncoding[Country, String](_.code)
   }
+
   case class WeatherStation(country: Country, city: String, stationId: String, entry: Int, value: Int)
 
   object WeatherStation {

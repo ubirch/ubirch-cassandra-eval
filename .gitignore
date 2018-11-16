@@ -2,5 +2,6 @@
 *.log
 target
 .idea
-project
+project/project
+project/target
 *.iml

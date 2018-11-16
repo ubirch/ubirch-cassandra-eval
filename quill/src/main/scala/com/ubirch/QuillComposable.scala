@@ -5,6 +5,7 @@ import io.getquill._
 import scala.concurrent.ExecutionContext.Implicits.global
 
 object QuillComposable extends App {
+
   val db = new CassandraAsyncContext(SnakeCase, "db")
 
   import db._
