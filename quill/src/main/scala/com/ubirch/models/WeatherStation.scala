@@ -22,9 +22,6 @@ object WeatherStation extends CassandraDBConn {
       getAllByCountryAndCityQuote(country, city).filter(_.stationId == stationId)
   }
 
-
   def getAllByCountry(country: String) = db.run(getAllByCountryQuote(lift(country)))
-
-
 
 }

@@ -4,13 +4,12 @@ package com.ubirch
  * Copyright (C) 2016-2018 Lightbend Inc. <http://www.lightbend.com>
  */
 
-
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import akka.stream.alpakka.cassandra.CassandraBatchSettings
-import akka.stream.alpakka.cassandra.scaladsl.{CassandraFlow, CassandraSink, CassandraSource}
-import akka.stream.scaladsl.{Sink, Source}
-import com.datastax.driver.core.{Cluster, PreparedStatement, SimpleStatement}
+import akka.stream.alpakka.cassandra.scaladsl.{ CassandraFlow, CassandraSink, CassandraSource }
+import akka.stream.scaladsl.{ Sink, Source }
+import com.datastax.driver.core.{ Cluster, PreparedStatement, SimpleStatement }
 import org.scalatest._
 import org.scalatest.concurrent.ScalaFutures
 
@@ -19,14 +18,14 @@ import scala.concurrent._
 import scala.concurrent.duration._
 
 /**
-  * All the tests must be run with a local Cassandra running on default port 9042.
-  */
+ * All the tests must be run with a local Cassandra running on default port 9042.
+ */
 class CassandraAlpakkaSpec
   extends WordSpec
-    with ScalaFutures
-    with BeforeAndAfterEach
-    with BeforeAndAfterAll
-    with MustMatchers {
+  with ScalaFutures
+  with BeforeAndAfterEach
+  with BeforeAndAfterAll
+  with MustMatchers {
 
   //#element-to-insert
   case class ToInsert(id: Integer, cc: Integer)
@@ -61,15 +60,13 @@ class CassandraAlpakkaSpec
          |  'class': 'SimpleStrategy',
          |  'replication_factor': '1'
          |};
-      """.stripMargin
-    )
+      """.stripMargin)
     session.execute(
       s"""
          |CREATE TABLE IF NOT EXISTS $keyspaceName.test (
          |    id int PRIMARY KEY
          |);
-      """.stripMargin
-    )
+      """.stripMargin)
 
     session.execute(
       s"""
@@ -78,8 +75,7 @@ class CassandraAlpakkaSpec
          |	cc int,
          |	PRIMARY KEY (id, cc)
          |);
-      """.stripMargin
-    )
+      """.stripMargin)
   }
 
   override def afterEach(): Unit =
@@ -178,7 +174,8 @@ class CassandraAlpakkaSpec
       //#settings-batching-flow
 
       //#run-batching-flow
-      val flow = CassandraFlow.createUnloggedBatchWithPassThrough[ToInsert, Integer](parallelism = 2,
+      val flow = CassandraFlow.createUnloggedBatchWithPassThrough[ToInsert, Integer](
+        parallelism = 2,
         preparedStatement,
         statementBinder,
         ti => ti.id,

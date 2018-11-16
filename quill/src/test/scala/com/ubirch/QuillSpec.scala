@@ -1,20 +1,20 @@
 package com.ubirch
 
-import io.getquill.{CassandraAsyncContext, SnakeCase}
-import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, MustMatchers, WordSpec}
+import io.getquill.{ CassandraAsyncContext, SnakeCase }
+import org.scalatest.{ BeforeAndAfterAll, BeforeAndAfterEach, MustMatchers, WordSpec }
 import org.scalatest.concurrent.ScalaFutures
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
 import io.getquill._
 
-class QuillSpec   extends WordSpec
+class QuillSpec extends WordSpec
   with ScalaFutures
   with BeforeAndAfterEach
   with BeforeAndAfterAll
   with MustMatchers {
 
-  "QuillSpec"  must {
+  "QuillSpec" must {
 
     "do simple query" in {
 
@@ -38,6 +38,5 @@ class QuillSpec   extends WordSpec
     }
 
   }
-
 
 }
