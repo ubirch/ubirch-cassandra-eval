@@ -93,7 +93,7 @@ CREATE TABLE IF NOT EXISTS db.weather_station (
 
 **Notes:**
 
-* It support case classes very nicely. In the case con composed/nested case classes, it offers a simple way to add from/to functions that allow the mapping.
+* It supports case classes very nicely. In the case con composed/nested case classes, it offers a simple way to add from/to functions that allow the mapping.
 * The schema fields can be customized to support different table names or field names. For example if a field in your case class is name, you can 
 customize it to use "_name" against the db. This is a plus.
 * Values from the db can be lifted to case classes.
@@ -111,12 +111,12 @@ queries can return values that are not part of the db.
 
 1. How is the connection pool handled and how configurations are available.?
 2. How can different versions of the same table be handled?
-3. What is the recommended way to manage the cassandra context throughout your models.
+3. What is the recommended way to manage the cassandra context throughout your models.?
 4. Does Quill take care of closing the connections or does an explicit close needs to be done?
 
 ### How to run
 
-#####Examples
+####Examples
 
 ```
 1. Start your Cassandra.
@@ -124,7 +124,7 @@ queries can return values that are not part of the db.
 3. Select the example you think can be intersting.
 ```
 
-#####Tests
+####Tests
 
 ```
 1. Start your Cassandra.
