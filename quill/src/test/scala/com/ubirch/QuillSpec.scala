@@ -35,7 +35,7 @@ class QuillSpec extends WordSpec
       liftQuery(weatherStations).foreach(c => query[WeatherStation].insert(c))
     }
 
-    val insert = quote {
+    def insert = quote {
       ws: WeatherStation => query[WeatherStation].insert(ws)
     }
 
@@ -50,8 +50,8 @@ class QuillSpec extends WordSpec
     WeatherStation("DE", "Berlin", UUID.randomUUID().toString, r.nextInt(), r.nextInt))
 
   override protected def beforeEach(): Unit = {
-    db.run(WeatherStation.delete)
-    db.run(WeatherStation.insert(weatherStations))
+    await(db.run(WeatherStation.delete))
+    await(db.run(WeatherStation.insert(weatherStations)))
   }
 
   override def afterAll(): Unit = {
