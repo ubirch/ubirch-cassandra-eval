@@ -110,13 +110,14 @@ queries can return values that are not part of the db.
 **Questions:**
 
 1. How is the connection pool handled and how configurations are available.?
+    It looks like a config object can be passed into the context?
 2. How can different versions of the same table be handled?
 3. What is the recommended way to manage the cassandra context throughout your models.?
 4. Does Quill take care of closing the connections or does an explicit close needs to be done?
 
 ### How to run
 
-####Examples
+_Examples_
 
 ```
 1. Start your Cassandra.
@@ -124,13 +125,26 @@ queries can return values that are not part of the db.
 3. Select the example you think can be intersting.
 ```
 
-####Tests
+_Tests_
+
+You can run all tests by following the next instructions:
 
 ```
 1. Start your Cassandra.
 2. Run 'sbt test'
 ```
   
+Or you can run a specific test by doing:
+
+```
+1. Start your Cassandra.
+2. Run 'sbt testOnly TEST_CLASS'
+```  
+
+The available test classes are:
+
+1. _com.ubirch.QuillOpsSpec_: Plays with basic algebraic operators.   
+2. _com.ubirch.QuillSpec_: Something like above, but simpler.
 
 
 
