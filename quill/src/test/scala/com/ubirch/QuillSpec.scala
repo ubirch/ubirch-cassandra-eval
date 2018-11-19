@@ -2,6 +2,7 @@ package com.ubirch
 
 import java.util.UUID
 
+import com.datastax.driver.core.{ Cluster, PoolingOptions }
 import io.getquill.{ CassandraAsyncContext, SnakeCase }
 import org.scalatest.{ BeforeAndAfterAll, BeforeAndAfterEach, MustMatchers, WordSpec }
 import org.scalatest.concurrent.ScalaFutures
@@ -15,7 +16,18 @@ class QuillSpec extends WordSpec
   with BeforeAndAfterAll
   with MustMatchers {
 
-  val db = new CassandraAsyncContext(SnakeCase, "db")
+  //Config Object can be passed in to the Context object which is a good thing as specific configs could be used.
+  //https://docs.datastax.com/en/developer/java-driver/2.1/manual/pooling/
+
+  val poolingOptions = new PoolingOptions
+
+  val cluster = Cluster.builder
+    .addContactPoint("127.0.0.1")
+    .withPort(9042)
+    .withPoolingOptions(poolingOptions)
+    .build
+
+  val db = new CassandraAsyncContext(SnakeCase, cluster, "db", 1000)
 
   import db._
 

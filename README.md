@@ -124,9 +124,40 @@ queries can return values that are not part of the db.
 **Questions:**
 
 1. How is the connection pool handled and how configurations are available.?
+
     It looks like a config object can be passed into the context?
+    
+    The context object supports the following constructors:
+    
+    ```
+      def this(naming: N, config: CassandraContextConfig) = this(naming, config.cluster, config.keyspace, config.preparedStatementCacheSize)
+      def this(naming: N, config: Config) = this(naming, CassandraContextConfig(config))
+      def this(naming: N, configPrefix: String) = this(naming, LoadConfig(configPrefix))
+    ```
+      
+    This is a good thing since we can pass (build) in special config direct onto driver, like pooling.       
+    
+    [Datastax Pooling](https://docs.datastax.com/en/developer/java-driver/2.1/manual/pooling/)
+    
+    A first try looks like this:
+    
+    ```
+      val poolingOptions = new PoolingOptions
+    
+      val cluster = Cluster.builder
+        .addContactPoint("127.0.0.1")
+        .withPort(9042)
+        .withPoolingOptions(poolingOptions)
+        .build
+    
+      val db = new CassandraAsyncContext(SnakeCase, cluster, "db", 1000)
+    ```
+    
 2. How can different versions of the same table be handled?
 3. What is the recommended way to manage the cassandra context throughout your models.?
+    
+    An interesting option is probably DI.
+    
 4. Does Quill take care of closing the connections or does an explicit close needs to be done?
 
 ### How to run
