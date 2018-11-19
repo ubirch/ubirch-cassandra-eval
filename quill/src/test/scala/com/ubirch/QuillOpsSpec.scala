@@ -1,5 +1,7 @@
 package com.ubirch
 
+import java.util.UUID
+
 import com.datastax.driver.core.exceptions.InvalidQueryException
 import io.getquill.context.cassandra.CassandraContext
 import io.getquill.context.cassandra.encoding.{ Decoders, Encoders }
@@ -13,6 +15,8 @@ trait TrafficLightSensorDAOBase {
 
   val db: CassandraContext[_] with Encoders with Decoders
   import db._
+
+  case class SensorFailuresCount(id: UUID, failures: Long)
 
   case class TrafficLightSensor(country: String, city: String, sensorId: String, entry: Int, value: Int)
 
@@ -48,6 +52,7 @@ class QuillOpsSpec extends WordSpec
   override protected def beforeAll(): Unit = {
     await(db.run(deleteAll))
     await(db.run(liftQuery(trafficLightSensors).foreach(ws => insert(ws))))
+    await(db.run(quote(query[SensorFailuresCount].delete)))
   }
 
   override def afterAll(): Unit = {
@@ -86,6 +91,24 @@ class QuillOpsSpec extends WordSpec
 
     "have the same size" in {
       assert(await(db.run(count)) == trafficLightSensors.size)
+    }
+
+    "do count update" in {
+
+      val fixedUUID: UUID = UUID.fromString("41245902-69a0-450c-8d37-78e34f0e6760")
+
+      val updateCounter = quote {
+        (id: UUID, add: Long) => query[SensorFailuresCount].filter(_.id == id).update(c => c.failures -> (c.failures + add))
+      }
+
+      val select = quote {
+        id: UUID => query[SensorFailuresCount].filter(_.id == id)
+      }
+
+      await(db.run(updateCounter(lift(fixedUUID), 10L)))
+
+      assert(await(db.run(select(lift(fixedUUID)))).map(_.failures).headOption.getOrElse(-1) == 10L)
+
     }
 
   }

@@ -98,6 +98,11 @@ CREATE TABLE IF NOT EXISTS db.traffic_light_sensor (
   value INT,
   PRIMARY KEY (country, city, sensor_id)
 );
+
+CREATE TABLE sensor_failures_count (
+  id UUID PRIMARY KEY,
+  failures counter
+  );
 ```
 
 **Notes:**
