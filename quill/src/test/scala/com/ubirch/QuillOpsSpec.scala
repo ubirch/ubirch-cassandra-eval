@@ -9,28 +9,28 @@ import org.scalatest.{ BeforeAndAfterAll, BeforeAndAfterEach, MustMatchers, Word
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-trait WeatherStationDAOBase {
+trait TrafficLightSensorDAOBase {
 
   val db: CassandraContext[_] with Encoders with Decoders
   import db._
 
-  case class WeatherStation(country: String, city: String, stationId: String, entry: Int, value: Int)
+  case class TrafficLightSensor(country: String, city: String, sensorId: String, entry: Int, value: Int)
 
-  val weatherStations = List(
-    WeatherStation("DE", "Berlin", "1", 1, 1),
-    WeatherStation("CO", "Bogotá", "2", 2, 2),
-    WeatherStation("UK", "London", "3", 3, 3),
-    WeatherStation("USA", "NYC", "4", 4, 4))
+  val trafficLightSensors = List(
+    TrafficLightSensor("DE", "Berlin", "1", 1, 1),
+    TrafficLightSensor("CO", "Bogotá", "2", 2, 2),
+    TrafficLightSensor("UK", "London", "3", 3, 3),
+    TrafficLightSensor("USA", "NYC", "4", 4, 4))
 
-  val insert = quote((e: WeatherStation) => query[WeatherStation].insert(e))
-  val deleteAll = quote(query[WeatherStation].delete)
-  val selectAll = quote(query[WeatherStation])
-  val map = quote(query[WeatherStation].map(_.city))
-  val filter = quote(query[WeatherStation].filter(_.city == "Berlin"))
-  val filterAllowingFiltering = quote(query[WeatherStation].filter(_.city == "Berlin").allowFiltering)
-  val withFilter = quote(query[WeatherStation].withFilter(_.country == "Berlin"))
-  val take = quote(query[WeatherStation].take(2))
-  val entitySize = quote(query[WeatherStation].size)
+  val insert = quote((e: TrafficLightSensor) => query[TrafficLightSensor].insert(e))
+  val deleteAll = quote(query[TrafficLightSensor].delete)
+  val selectAll = quote(query[TrafficLightSensor])
+  val map = quote(query[TrafficLightSensor].map(_.city))
+  val filter = quote(query[TrafficLightSensor].filter(_.city == "Berlin"))
+  val filterAllowingFiltering = quote(query[TrafficLightSensor].filter(_.city == "Berlin").allowFiltering)
+  val withFilter = quote(query[TrafficLightSensor].withFilter(_.country == "Berlin"))
+  val take = quote(query[TrafficLightSensor].take(2))
+  val count = quote(query[TrafficLightSensor].size)
 
 }
 
@@ -39,7 +39,7 @@ class QuillOpsSpec extends WordSpec
   with BeforeAndAfterEach
   with BeforeAndAfterAll
   with MustMatchers
-  with WeatherStationDAOBase {
+  with TrafficLightSensorDAOBase {
 
   val db = new CassandraAsyncContext(SnakeCase, "db")
 
@@ -47,7 +47,7 @@ class QuillOpsSpec extends WordSpec
 
   override protected def beforeAll(): Unit = {
     await(db.run(deleteAll))
-    await(db.run(liftQuery(weatherStations).foreach(ws => insert(ws))))
+    await(db.run(liftQuery(trafficLightSensors).foreach(ws => insert(ws))))
   }
 
   override def afterAll(): Unit = {
@@ -56,28 +56,36 @@ class QuillOpsSpec extends WordSpec
 
   "Quill Basic Ops Spec" must {
 
-    "must contain the same elems as inserted when doing a SELECT" in {
+    "contain the same elems as inserted when doing a SELECT" in {
 
-      await(db.run(selectAll)) must contain theSameElementsAs weatherStations
-
-    }
-
-    "must contain the same mapped elems as inserted when doing a MAP" in {
-
-      await(db.run(map)) must contain theSameElementsAs weatherStations.map(_.city)
+      await(db.run(selectAll)) must contain theSameElementsAs trafficLightSensors
 
     }
 
-    "must contain the same filtered elems as inserted when doing a FILTER ALLOWING FILTERING" in {
+    "contain the same mapped elems as inserted when doing a MAP" in {
 
-      await(db.run(filterAllowingFiltering)) must contain theSameElementsAs weatherStations.filter(_.city == "Berlin")
+      await(db.run(map)) must contain theSameElementsAs trafficLightSensors.map(_.city)
 
     }
 
-    "must contain the same filtered elems as inserted when doing a FILTER" in {
+    "contain the same filtered elems as inserted when doing a FILTER ALLOWING FILTERING" in {
+
+      await(db.run(filterAllowingFiltering)) must contain theSameElementsAs trafficLightSensors.filter(_.city == "Berlin")
+
+    }
+
+    "contain the same filtered elems as inserted when doing a FILTER" in {
 
       assertThrows[InvalidQueryException](await(db.run(filter)))
 
+    }
+
+    "contain the same values after TAKING 2 values" in {
+      await(db.run(take)) must contain theSameElementsAs trafficLightSensors.take(2)
+    }
+
+    "have the same size" in {
+      assert(await(db.run(count)) == trafficLightSensors.size)
     }
 
   }

@@ -89,6 +89,15 @@ CREATE TABLE IF NOT EXISTS db.weather_station (
   value INT,
   PRIMARY KEY (country, city, station_id)
 );
+
+CREATE TABLE IF NOT EXISTS db.traffic_light_sensor (
+  country TEXT,
+  city TEXT,
+  sensor_id TEXT,
+  entry INT,
+  value INT,
+  PRIMARY KEY (country, city, sensor_id)
+);
 ```
 
 **Notes:**
