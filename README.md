@@ -63,7 +63,9 @@ test or run
 
 ```
 1. Start your Cassandra.
-2. run sbt test
+2. run 'sbt'
+3. Select project by running 'project alpakka' 
+4. run test
 ```
 
 ## Quill
@@ -153,6 +155,8 @@ queries can return values that are not part of the db.
       val db = new CassandraAsyncContext(SnakeCase, cluster, "db", 1000)
     ```
     
+    This means that we could probably use the same options as supported in the [Cluster Builder](https://docs.datastax.com/en/drivers/java/3.1/com/datastax/driver/core/Cluster.Builder.html).
+    
 2. How can different versions of the same table be handled?
 3. What is the recommended way to manage the cassandra context throughout your models.?
     
@@ -166,8 +170,10 @@ _Examples_
 
 ```
 1. Start your Cassandra.
-2. Run 'sbt run' in your console
-3. Select the example you think can be intersting.
+2. Run 'sbt'
+3. Select project by running 'project quill' 
+4. Run 'run' in your console
+5. Select the example you think can be intersting.
 ```
 
 _Tests_
@@ -176,20 +182,63 @@ You can run all tests by following the next instructions:
 
 ```
 1. Start your Cassandra.
-2. Run 'sbt test'
+2. Run 'sbt'
+3. Select project by running 'project quill'
+4. Run 'sbt test'
 ```
   
 Or you can run a specific test by doing:
 
 ```
 1. Start your Cassandra.
-2. Run 'sbt testOnly TEST_CLASS'
+2. Run 'sbt'
+3. Select project by running 'project quill'
+4. Run 'sbt testOnly TEST_CLASS'
 ```  
 
 The available test classes are:
 
 1. _com.ubirch.QuillOpsSpec_: Plays with basic algebraic operators.   
 2. _com.ubirch.QuillSpec_: Something like above, but simpler.
+
+## Phantom
+
+**Page**: https://outworkers.github.io/phantom/
+
+**Description**: Reactive type-safe Scala driver for Apache Cassandra/Datastax Enterprise
+
+**Prerequisites:** None
+
+* A running instance of [Apache Cassandra](http://cassandra.apache.org/)
+* Make sure you have run this on your db.
+
+**Notes**
+
+* It supports explicit configs as per the options supported in the [Cluster Builder](https://docs.datastax.com/en/drivers/java/3.1/com/datastax/driver/core/Cluster.Builder.html).
+* Table/Keyspace creation commands can be passed through to initialized session.
+* UDT types are on the pro version only.
+* Connectors configs [here](https://outworkers.github.io/phantom/basics/connectors.html).
+* Customization of the schema names is also supported.
+* The definition of the tables has to be explicitly done and special care should be taken into account when defining your column mapping, especially the partition and clustering keys.
+
+https://github.com/outworkers/phantom/wiki/Indexes
+
+### How to run
+
+_Tests_
+
+You can run all tests by following the next instructions:
+
+```
+1. Start your Cassandra.
+2. Run 'sbt'
+3. Select project by running 'project phantom'
+4. Run 'sbt test'
+```
+
+## DB migrations management
+
+1. https://medium.com/cobli/the-best-way-to-manage-schema-migrations-in-cassandra-92a34c834824
 
 
 

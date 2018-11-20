@@ -14,7 +14,8 @@ lazy val global = project
   .aggregate(
     common,
     alpakka,
-    quill
+    quill,
+    phantom
   )
 
 lazy val common = project
@@ -48,6 +49,18 @@ lazy val quill = project
     common
   )
 
+lazy val phantom = project
+  .settings(
+    name := "phantom",
+    settings,
+    libraryDependencies ++= commonDependencies ++ Seq(
+      dependencies.phantom
+    )
+  )
+  .dependsOn(
+    common
+  )
+
 // DEPENDENCIES
 
 lazy val dependencies =
@@ -58,6 +71,7 @@ lazy val dependencies =
     val scalatestV        = "3.0.5"
     val quillV            = "2.6.0"
     val alpakkaCassandraV = "1.0-M1"
+    val phantomV          = "2.27.0"
 
     //Basics
     val logback          = "ch.qos.logback"             % "logback-classic"                % logbackV
@@ -68,6 +82,7 @@ lazy val dependencies =
     //Good stuff
     val quill            = "io.getquill"                %% "quill-cassandra"               % quillV
     val alpakkaCassandra = "com.lightbend.akka"         %% "akka-stream-alpakka-cassandra" % alpakkaCassandraV
+    val phantom          =   "com.outworkers"           %% "phantom-dsl"                   % phantomV
   }
 
 lazy val commonDependencies = Seq(
