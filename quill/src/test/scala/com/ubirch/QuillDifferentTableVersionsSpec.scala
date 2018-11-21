@@ -16,10 +16,6 @@ trait EventDAOBase {
   val db: CassandraContext[_] with Encoders with Decoders
   import db._
 
-  trait TablePointer[T] {
-    implicit val eventSchemaMeta: SchemaMeta[T]
-  }
-
   case class Event(
     id: UUID,
     principal: String,
@@ -36,26 +32,30 @@ trait EventDAOBase {
     created: Date,
     updated: Date)
 
+  trait TablePointer[T] {
+    implicit val eventSchemaMeta: SchemaMeta[T]
+  }
+
   object Events extends TablePointer[Event] {
 
     implicit val eventSchemaMeta = schemaMeta[Event]("events")
 
     def selectAll(implicit sm: SchemaMeta[Event]) = quote(query[Event])
 
-    def byPrincipalAndCategory(principal: String, category: String)(implicit sm: SchemaMeta[Event]) = quote {
+    def byPrincipalAndCategory(principal: String, category: String) = quote {
       query[Event]
         .filter(_.principal == lift(principal))
         .filter(_.category == lift(category))
     }
 
-    def byPrincipalAndCatAndYear(principal: String, category: String, date: DateTime)(implicit sm: SchemaMeta[Event]) = quote {
+    def byPrincipalAndCatAndYear(principal: String, category: String, date: DateTime) = quote {
       query[Event]
         .filter(_.principal == lift(principal))
         .filter(_.category == lift(category))
         .filter(_.year == lift(date.year().get()))
     }
 
-    def byPrincipalAndCatAndYearAndMonth(principal: String, category: String, date: DateTime)(implicit sm: SchemaMeta[Event]) = quote {
+    def byPrincipalAndCatAndYearAndMonth(principal: String, category: String, date: DateTime) = quote {
       query[Event]
         .filter(_.principal == lift(principal))
         .filter(_.category == lift(category))
@@ -63,7 +63,7 @@ trait EventDAOBase {
         .filter(_.month == lift(date.monthOfYear().get()))
     }
 
-    def byPrincipalAndCatAndYearAndMonthAndDay(principal: String, category: String, date: DateTime)(implicit sm: SchemaMeta[Event]) = quote {
+    def byPrincipalAndCatAndYearAndMonthAndDay(principal: String, category: String, date: DateTime) = quote {
       query[Event]
         .filter(_.principal == lift(principal))
         .filter(_.category == lift(category))
@@ -80,7 +80,7 @@ trait EventDAOBase {
 
     def selectAll(implicit sm: SchemaMeta[Event]) = quote(query[Event])
 
-    def byCatAndEventSourceAndYearAndMonth(category: String, eventSourceService: String, date: DateTime)(implicit sm: SchemaMeta[Event]) = quote {
+    def byCatAndEventSourceAndYearAndMonth(category: String, eventSourceService: String, date: DateTime) = quote {
       query[Event]
         .filter(_.category == lift(category))
         .filter(_.eventSourceService == lift(eventSourceService))
@@ -88,7 +88,7 @@ trait EventDAOBase {
         .filter(_.month == lift(date.monthOfYear().get()))
     }
 
-    def byCatAndEventSourceAndYearAndMonthAndDay(category: String, eventSourceService: String, date: DateTime)(implicit sm: SchemaMeta[Event]) = quote {
+    def byCatAndEventSourceAndYearAndMonthAndDay(category: String, eventSourceService: String, date: DateTime) = quote {
       query[Event]
         .filter(_.category == lift(category))
         .filter(_.eventSourceService == lift(eventSourceService))
@@ -97,7 +97,7 @@ trait EventDAOBase {
         .filter(_.day == lift(date.dayOfMonth().get()))
     }
 
-    def byCatAndEventSourceAndYearAndMonthAndDayAndDeviceId(category: String, eventSourceService: String, date: DateTime, deviceId: UUID)(implicit sm: SchemaMeta[Event]) = quote {
+    def byCatAndEventSourceAndYearAndMonthAndDayAndDeviceId(category: String, eventSourceService: String, date: DateTime, deviceId: UUID) = quote {
       query[Event]
         .filter(_.category == lift(category))
         .filter(_.eventSourceService == lift(eventSourceService))
