@@ -111,24 +111,6 @@ trait EventDAOBase {
 
   }
 
-  //val events = quote(querySchema[Event]("events"))
-  //val selectAll = quote(events)
-
-  Event(
-    UUID.fromString("b5be9010-ed0e-11e8-82a0-53d40fda30be"),
-    "RMunichRET", "Anchor",
-    "Avatar-Service",
-    UUID.fromString("41245902-69a0-450c-8d37-78e34f0e6760"),
-    2018,
-    11,
-    2,
-    11,
-    17,
-    0,
-    0,
-    new Date(),
-    new Date())
-
   val events = List(
     Event(UUID.fromString("b5be9010-ed0e-11e8-82a0-53d40fda30be"), "RMunichRET", "Anchor", "Avatar-Service", UUID.fromString("41245902-69a0-450c-8d37-78e34f0e6760"), 2018, 11, 2, 11, 17, 0, 0, new Date(), new Date()),
     Event(UUID.fromString("b5bb34b0-ed0e-11e8-82a0-53d40fda30be"), "Regio IT", "Anchor", "Avatar-Service", UUID.fromString("522f3e64-6ee5-470c-8b66-9edb0cfbf3b1"), 2018, 11, 2, 8, 17, 0, 0, new Date(), new Date()),
