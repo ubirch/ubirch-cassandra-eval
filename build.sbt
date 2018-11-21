@@ -72,24 +72,27 @@ lazy val dependencies =
     val quillV            = "2.6.0"
     val alpakkaCassandraV = "1.0-M1"
     val phantomV          = "2.27.0"
+    val jodaTimeV         = "2.10.1"
 
     //Basics
     val logback          = "ch.qos.logback"             % "logback-classic"                % logbackV
     val scalaLogging     = "com.typesafe.scala-logging" %% "scala-logging"                 % scalaLoggingV
     val slf4j            = "org.slf4j"                  % "jcl-over-slf4j"                 % slf4jV
     val scalatest        = "org.scalatest"              %% "scalatest"                     % scalatestV
+    val jodaTime         = "joda-time"                  % "joda-time"                      % jodaTimeV
 
     //Good stuff
     val quill            = "io.getquill"                %% "quill-cassandra"               % quillV
     val alpakkaCassandra = "com.lightbend.akka"         %% "akka-stream-alpakka-cassandra" % alpakkaCassandraV
-    val phantom          =   "com.outworkers"           %% "phantom-dsl"                   % phantomV
+    val phantom          =  "com.outworkers"           %% "phantom-dsl"                   % phantomV
   }
 
 lazy val commonDependencies = Seq(
   dependencies.logback,
   dependencies.scalaLogging,
   dependencies.slf4j,
-  dependencies.scalatest  % "test"
+  dependencies.scalatest  % "test",
+  dependencies.jodaTime
 )
 
 // SETTINGS
