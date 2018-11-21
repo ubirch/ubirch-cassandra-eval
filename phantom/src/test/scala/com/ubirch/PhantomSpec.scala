@@ -77,6 +77,26 @@ class PhantomSpec extends WordSpec
 
     }
 
+    "do delete" in {
+
+      val sample = TrafficLightSensor("DE", "Berlin", "1", 1, 1)
+
+      val chain = for {
+        _ <- database.TrafficLightSensor.store(sample).future()
+        res <- database.TrafficLightSensor.findTrafficLightSensor(sample.country)
+        _ <- database.TrafficLightSensor.deleteCountry(sample.country)
+        res2 <- database.TrafficLightSensor.findTrafficLightSensor(sample.country)
+      } yield (res, res2)
+
+      whenReady(chain) {
+        case (res, res2) =>
+          res mustBe defined
+          res mustEqual Some(sample)
+          res2 mustBe empty
+      }
+
+    }
+
   }
 
 }

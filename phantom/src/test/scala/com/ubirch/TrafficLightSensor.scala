@@ -41,4 +41,8 @@ abstract class TrafficLightSensors extends Table[TrafficLightSensors, TrafficLig
       .modify(_.entry setTo newEntry).future()
   }
 
+  def deleteCountry(country: String): ScalaFuture[ResultSet] = {
+    delete.where(_.country eqs country).future()
+  }
+
 }
