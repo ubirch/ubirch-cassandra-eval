@@ -1,6 +1,14 @@
 # ubirch-cassandra-eval
 Evaluation of Cassandra and Scala
 
+###TL;TR
+
+Technology | Documentation  | Licence | Case Class Support | Streams Support | Async Support | Scala-like Idioms
+------------ | ------------- | ------------- | ------------- | ------------- | -------------  | -------------  
+Alpakka | OK | Open Source: Apache 2 License | Needs explicit binding | Built on top of Akka-Streams | Yes | Yes
+Quill | OK | Open Source: Apache 2 License | Out of the box support | Through Monix Observables | Yes | Yes
+Phantom | OK |  Apache V2 License. Other Components are also [licenced](https://github.com/outworkers/phantom#license-and-copyright) (phantom-pro) | Supports it but needs explicit table class definition |  play-iteratees | Yes | Almost
+
 ## Getting Started
 
 * [Apache Cassandra](http://cassandra.apache.org/)
@@ -105,6 +113,70 @@ CREATE TABLE sensor_failures_count (
   id UUID PRIMARY KEY,
   failures counter
   );
+  
+  
+drop table if exists events;
+
+create table if not exists events (
+    id timeuuid ,
+    principal text ,
+    category text ,
+    event_source_service text ,
+    device_id UUID,
+    year int ,
+    month int ,
+    day int ,
+    hour int ,
+    minute int ,
+    second int,
+    milli int,
+    created timestamp,
+    updated timestamp, 
+    PRIMARY KEY ((principal, category), year, month, day, hour, device_id)
+) WITH CLUSTERING ORDER BY (year desc, month DESC, day DESC);
+
+drop table if exists events_by_cat;
+
+create table if not exists events_by_cat (
+    id timeuuid ,
+    principal text ,
+    category text ,
+    event_source_service text ,
+    device_id UUID,
+    year int ,
+    month int ,
+    day int ,
+    hour int ,
+    minute int ,
+    second int,
+    milli int,
+    created timestamp,
+    updated timestamp, 
+    PRIMARY KEY ((category, event_source_service, year, month), day, hour, device_id)
+);
+
+insert into events (id, principal, category, event_source_service, device_id, year, month, day, hour, minute, second, milli, created, updated) values (now(), 'Regio IT', 'Validate', 'Avatar-Service', 522f3e64-6ee5-470c-8b66-9edb0cfbf3b1, 2018, 11, 1, 7, 15, 0, 0, toUnixTimestamp(now()), toUnixTimestamp(now()));
+insert into events (id, principal, category, event_source_service, device_id, year, month, day, hour, minute, second, milli, created, updated) values (now(), 'Regio IT', 'Anchor', 'Avatar-Service', 522f3e64-6ee5-470c-8b66-9edb0cfbf3b1, 2018, 11, 1, 7, 17, 0, 0, toUnixTimestamp(now()), toUnixTimestamp(now()));
+insert into events (id, principal, category, event_source_service, device_id, year, month, day, hour, minute, second, milli, created, updated) values (now(), 'Regio IT', 'Validate', 'Avatar-Service', 522f3e64-6ee5-470c-8b66-9edb0cfbf3b1, 2018, 11, 2, 8, 15, 0, 0, toUnixTimestamp(now()), toUnixTimestamp(now()));
+insert into events (id, principal, category, event_source_service, device_id, year, month, day, hour, minute, second, milli, created, updated) values (now(), 'Regio IT', 'Anchor', 'Avatar-Service', 522f3e64-6ee5-470c-8b66-9edb0cfbf3b1, 2018, 11, 2, 8, 17, 0, 0, toUnixTimestamp(now()), toUnixTimestamp(now()));
+
+insert into events (id, principal, category, event_source_service, device_id, year, month, day, hour, minute, second, milli, created, updated) values (now(), 'MunichRE', 'Validate', 'Avatar-Service', 41245902-69a0-450c-8d37-78e34f0e6760, 2018, 10, 1, 9, 15, 0, 0, toUnixTimestamp(now()), toUnixTimestamp(now()));
+insert into events (id, principal, category, event_source_service, device_id, year, month, day, hour, minute, second, milli, created, updated) values (now(), 'MunichRE', 'Anchor', 'Avatar-Service', 41245902-69a0-450c-8d37-78e34f0e6760, 2018, 11, 1, 9, 17, 0, 0, toUnixTimestamp(now()), toUnixTimestamp(now()));
+insert into events (id, principal, category, event_source_service, device_id, year, month, day, hour, minute, second, milli, created, updated) values (now(), 'MunichRE', 'Validate', 'Avatar-Service', 41245902-69a0-450c-8d37-78e34f0e6760, 2018, 11, 2, 11, 15, 0, 0, toUnixTimestamp(now()), toUnixTimestamp(now()));
+insert into events (id, principal, category, event_source_service, device_id, year, month, day, hour, minute, second, milli, created, updated) values (now(), 'RMunichRET', 'Anchor', 'Avatar-Service', 41245902-69a0-450c-8d37-78e34f0e6760, 2018, 11, 2, 11, 17, 0, 0, toUnixTimestamp(now()), toUnixTimestamp(now()));
+
+insert into events_by_cat (id, principal, category, event_source_service, device_id, year, month, day, hour, minute, second, milli, created, updated) values (now(), 'Regio IT', 'Validate', 'Avatar-Service', 522f3e64-6ee5-470c-8b66-9edb0cfbf3b1, 2018, 11, 1, 7, 15, 0, 0, toUnixTimestamp(now()), toUnixTimestamp(now()));
+insert into events_by_cat (id, principal, category, event_source_service, device_id, year, month, day, hour, minute, second, milli, created, updated) values (now(), 'Regio IT', 'Anchor', 'Avatar-Service', 522f3e64-6ee5-470c-8b66-9edb0cfbf3b1, 2018, 11, 1, 7, 17, 0, 0, toUnixTimestamp(now()), toUnixTimestamp(now()));
+insert into events_by_cat (id, principal, category, event_source_service, device_id, year, month, day, hour, minute, second, milli, created, updated) values (now(), 'Regio IT', 'Validate', 'Avatar-Service', 522f3e64-6ee5-470c-8b66-9edb0cfbf3b1, 2018, 11, 2, 8, 15, 0, 0, toUnixTimestamp(now()), toUnixTimestamp(now()));
+insert into events_by_cat (id, principal, category, event_source_service, device_id, year, month, day, hour, minute, second, milli, created, updated) values (now(), 'Regio IT', 'Anchor', 'Avatar-Service', 522f3e64-6ee5-470c-8b66-9edb0cfbf3b1, 2018, 11, 2, 8, 17, 0, 0, toUnixTimestamp(now()), toUnixTimestamp(now()));
+
+insert into events_by_cat (id, principal, category, event_source_service, device_id, year, month, day, hour, minute, second, milli, created, updated) values (now(), 'MunichRE', 'Validate', 'Avatar-Service', 41245902-69a0-450c-8d37-78e34f0e6760, 2018, 10, 1, 9, 15, 0, 0, toUnixTimestamp(now()), toUnixTimestamp(now()));
+insert into events_by_cat (id, principal, category, event_source_service, device_id, year, month, day, hour, minute, second, milli, created, updated) values (now(), 'MunichRE', 'Anchor', 'Avatar-Service', 41245902-69a0-450c-8d37-78e34f0e6760, 2018, 11, 1, 9, 17, 0, 0, toUnixTimestamp(now()), toUnixTimestamp(now()));
+insert into events_by_cat (id, principal, category, event_source_service, device_id, year, month, day, hour, minute, second, milli, created, updated) values (now(), 'MunichRE', 'Validate', 'Avatar-Service', 41245902-69a0-450c-8d37-78e34f0e6760, 2018, 11, 2, 11, 15, 0, 0, toUnixTimestamp(now()), toUnixTimestamp(now()));
+insert into events_by_cat (id, principal, category, event_source_service, device_id, year, month, day, hour, minute, second, milli, created, updated) values (now(), 'RMunichRET', 'Anchor', 'Avatar-Service', 41245902-69a0-450c-8d37-78e34f0e6760, 2018, 11, 2, 11, 17, 0, 0, toUnixTimestamp(now()), toUnixTimestamp(now()));
+
+  
+  
 ```
 
 **Notes:**
@@ -200,6 +272,7 @@ The available test classes are:
 
 1. _com.ubirch.QuillOpsSpec_: Plays with basic algebraic operators.   
 2. _com.ubirch.QuillSpec_: Something like above, but simpler.
+3. _com.ubirch.QuillDifferentTableVersionsSpec_: Shows how to have different versions of the same table
 
 ## Phantom
 
