@@ -417,6 +417,10 @@ You can run the tests by following the next instructions:
 4. Run 'testOnly com.ubirch.CassandraMigration'
 ```
 
+Table Output:
+
+![Schema Migration Table Example](https://raw.githubusercontent.com/ubirch/ubirch-cassandra-eval/master/readmeAssets/cassandra-migration-example.jpg "Schema Migration Table Example")
+
 ### How to run https://github.com/joeledwards/node-cassandra-migration
 
 **Prerequisites:** 
@@ -442,4 +446,4 @@ Not installing tool globally:
 
 Table Output:
 
-![Schema Table Example](https://github.com/ubirch/ubirch-cassandra-eval/readmeAssets/node-cassandra-schema-version.jpg "Schema Version Table Example")
+![Schema Version Table Example](https://raw.githubusercontent.com/ubirch/ubirch-cassandra-eval/master/readmeAssets/node-cassandra-schema-version.jpg "Schema Version Table Example")
