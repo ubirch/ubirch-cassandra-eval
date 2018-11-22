@@ -364,10 +364,9 @@ The available test classes are:
 
 **Description**: Reactive type-safe Scala driver for Apache Cassandra/Datastax Enterprise
 
-**Prerequisites:** None
+**Prerequisites:** 
 
 * A running instance of [Apache Cassandra](http://cassandra.apache.org/)
-* Make sure you have run this on your db.
 
 **Notes**
 
@@ -397,10 +396,13 @@ You can run all tests by following the next instructions:
 
 Technology | Language | Execution Mode | Has Migration folder | Incremental File Nomenclature (e.g 1.cql, 2.cql, ..., n.cql) | Filename-based order | cql statements support | Documentation | Heartbeat | Driver Version Dep.  
 ---------- | -------| -------------- | ---------------------| ------------------------------------------------------------ | -------------------- | ---------------------- | ------------  |  ---------- | ---------- 
-https://github.com/patka/cassandra-migration | Java | Migration Execution code needs to be put somewhere in the app when it boots | Yes | Yes | Yes | Yes | Basic | Last commit was 4 months ago: Seems like they are getting ready for a new cycle | 3.X  
-https://github.com/Contrast-Security-OSS/cassandra-migration | Java | Migration Execution code needs to be put somewhere in the app when it boots. It also has a java-based CLI| Yes | Yes | Yes | Yes | Basic | Last commit was 3 years ago: **Red flag** | 2.1: Found version conflict(s) in library dependencies; some are suspected to be binary incompatible 
-https://github.com/smartcat-labs/cassandra-migration-tool-java | Java | Migration Execution code needs to be put somewhere in the app when it boots. When using the moving data feature, that could take a lot of time. This feature is interesting, but I'd recommend and independent app to do this. | Yes | No | No | Yes | Basic | Last commit was 2 years ago: **Red flag** | 3.1: dependency conflicts, but solved
+https://github.com/patka/cassandra-migration | Java | * Migration Execution code needs to be put somewhere in the app when it boots | Yes | Yes | Yes | Yes | Basic | Last commit was 4 months ago: Seems like they are getting ready for a new cycle | 3.X  
+https://github.com/Contrast-Security-OSS/cassandra-migration | Java | * Migration Execution code needs to be put somewhere in the app when it boots. It also has a java-based CLI| Yes | Yes | Yes | Yes | Basic | Last commit was 3 years ago: **Red flag** | 2.1: Found version conflict(s) in library dependencies; some are suspected to be binary incompatible 
+https://github.com/smartcat-labs/cassandra-migration-tool-java | Java | * Migration Execution code needs to be put somewhere in the app when it boots. When using the moving data feature, that could take a lot of time. This feature is interesting, but I'd recommend and independent app to do this. | Yes | No | No | Yes | Basic | Last commit was 2 years ago: **Red flag** | 3.1: dependency conflicts, but solved
 https://github.com/Cobliteam/cassandra-migrate | Python | It's a CLI | Yes | Yes | Yes | Yes | Basic | Last commit was 1 year ago | Uses the Python driver
+https://github.com/joeledwards/node-cassandra-migration | Javascript | It's a CLI | Yes | Yes | Yes | Yes | Basic | Last commit was 5 months ago | Uses the Javascript driver
+
+\* The recommended way to handle these migrations would be through one simple app that controls the db migrations. 
    
 ### How to run https://github.com/patka/cassandra-migration
 
@@ -414,3 +416,30 @@ You can run the tests by following the next instructions:
 3. Select project by running 'project migrationTools'
 4. Run 'testOnly com.ubirch.CassandraMigration'
 ```
+
+### How to run https://github.com/joeledwards/node-cassandra-migration
+
+**Prerequisites:** 
+
+* A running instance of [Apache Cassandra](http://cassandra.apache.org/)
+* You have run this on your cassandra db:
+
+```
+CREATE KEYSPACE node_cassandra_migration_test WITH replication = {'class': 'SimpleStrategy','replication_factor': '1'};
+```
+
+_Tests_
+
+You can run the tests by following the next instructions:
+
+Not installing tool globally:
+
+```
+1. cd into externalMigrationTools/node/node-cassandra-migration
+2. npm install
+3. ./node_modules/cassandra-migration/bin/cassandra-migration migration.json
+```
+
+Table Output:
+
+![Schema Table Example](https://github.com/ubirch/ubirch-cassandra-eval/readmeAssets/node-cassandra-schema-version.jpg "Schema Version Table Example")

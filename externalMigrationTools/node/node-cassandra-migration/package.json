@@ -1,0 +1,22 @@
+{
+  "name": "ubirch-cassandra-eval",
+  "version": "1.0.0",
+  "description": "Evaluation of Cassandra and Scala",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ubirch/ubirch-cassandra-eval.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ubirch/ubirch-cassandra-eval/issues"
+  },
+  "homepage": "https://github.com/ubirch/ubirch-cassandra-eval#readme",
+  "dependencies": {
+    "cassandra-migration": "^2.7.0"
+  }
+}
