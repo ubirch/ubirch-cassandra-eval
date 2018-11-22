@@ -395,14 +395,12 @@ You can run all tests by following the next instructions:
 
 ## DB migrations management
 
-Technology | Execution Mode | Has Migration folder | Incremental File Nomenclature (e.g 1.cql, 2.cql, ..., n.cql) | Filename-based order | cql statements support  
----------- | -------------- | ---------------------| ------------------------------------------------------------ | -------------------- | ---------------------- |     
-https://github.com/patka/cassandra-migration |  Migration Execution code needs to be put somewhere in the app when it boots | Yes | Yes | Yes | Yes
-https://github.com/Contrast-Security-OSS/cassandra-migration |
-https://github.com/smartcat-labs/cassandra-migration-tool-java |
-    
-    
-_Interesting Read_ https://medium.com/cobli/the-best-way-to-manage-schema-migrations-in-cassandra-92a34c834824
+Technology | Language | Execution Mode | Has Migration folder | Incremental File Nomenclature (e.g 1.cql, 2.cql, ..., n.cql) | Filename-based order | cql statements support | Documentation | Heartbeat | Driver Version Dep.  
+---------- | -------| -------------- | ---------------------| ------------------------------------------------------------ | -------------------- | ---------------------- | ------------  |  ---------- | ---------- 
+https://github.com/patka/cassandra-migration | Java | Migration Execution code needs to be put somewhere in the app when it boots | Yes | Yes | Yes | Yes | Basic | Last commit was 4 months ago: Seems like they are getting ready for a new cycle | 3.X  
+https://github.com/Contrast-Security-OSS/cassandra-migration | Java | Migration Execution code needs to be put somewhere in the app when it boots. It also has a java-based CLI| Yes | Yes | Yes | Yes | Basic | Last commit was 3 years ago: **Red flag** | 2.1: Found version conflict(s) in library dependencies; some are suspected to be binary incompatible 
+https://github.com/smartcat-labs/cassandra-migration-tool-java | Java | Migration Execution code needs to be put somewhere in the app when it boots. When using the moving data feature, that could take a lot of time. This feature is interesting, but I'd recommend and independent app to do this. | Yes | No | No | Yes | Basic | Last commit was 2 years ago: **Red flag** | 3.1: dependency conflicts, but solved
+https://github.com/Cobliteam/cassandra-migrate | Python | It's a CLI | Yes | Yes | Yes | Yes | Basic | Last commit was 1 year ago | Uses the Python driver
    
 ### How to run https://github.com/patka/cassandra-migration
 
