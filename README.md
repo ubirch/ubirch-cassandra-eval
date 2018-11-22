@@ -395,25 +395,24 @@ You can run all tests by following the next instructions:
 
 ## DB migrations management
 
-1. https://medium.com/cobli/the-best-way-to-manage-schema-migrations-in-cassandra-92a34c834824
-
-2. https://github.com/patka/cassandra-migration
-
-    Technology | Execution Mode | Has Migration folder | Incremental File Nomenclature (e.g 1.cql, 2.cql, ..., n.cql) | Filename-based order | cql statements support  
-    ---------- | -------------- | ---------------------| ------------------------------------------------------------ | -------------------- | ---------------------- |     
-    https://github.com/patka/cassandra-migration |  Migration Execution code needs to be put somewhere in the app when it boots | Yes | Yes | Yes | Yes
-    https://github.com/Contrast-Security-OSS/cassandra-migration |
-    https://github.com/smartcat-labs/cassandra-migration-tool-java |
-
-
-
-
-
-
-
-
-
- 
+Technology | Execution Mode | Has Migration folder | Incremental File Nomenclature (e.g 1.cql, 2.cql, ..., n.cql) | Filename-based order | cql statements support  
+---------- | -------------- | ---------------------| ------------------------------------------------------------ | -------------------- | ---------------------- |     
+https://github.com/patka/cassandra-migration |  Migration Execution code needs to be put somewhere in the app when it boots | Yes | Yes | Yes | Yes
+https://github.com/Contrast-Security-OSS/cassandra-migration |
+https://github.com/smartcat-labs/cassandra-migration-tool-java |
     
+    
+_Interesting Read_ https://medium.com/cobli/the-best-way-to-manage-schema-migrations-in-cassandra-92a34c834824
+   
+### How to run https://github.com/patka/cassandra-migration
 
+_Tests_
 
+You can run the tests by following the next instructions:
+
+```
+1. Start your Cassandra.
+2. Run 'sbt'
+3. Select project by running 'project migrationTools'
+4. Run 'testOnly com.ubirch.CassandraMigration'
+```
