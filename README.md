@@ -401,6 +401,7 @@ https://github.com/Contrast-Security-OSS/cassandra-migration | Java | * Migratio
 https://github.com/smartcat-labs/cassandra-migration-tool-java | Java | * Migration Execution code needs to be put somewhere in the app when it boots. When using the moving data feature, that could take a lot of time. This feature is interesting, but I'd recommend and independent app to do this. | Yes | No | No | Yes | Basic | Last commit was 2 years ago: **Red flag** | 3.1: dependency conflicts, but solved
 https://github.com/Cobliteam/cassandra-migrate | Python | It's a CLI | Yes | Yes | Yes | Yes | Basic | Last commit was 1 year ago | Uses the Python driver
 https://github.com/joeledwards/node-cassandra-migration | Javascript | It's a CLI | Yes | Yes | Yes | Yes | Basic | Last commit was 5 months ago | Uses the Javascript driver
+https://github.com/o19s/trireme/ | Python | It's a CLI | Yes | Yes | Yes | Yes | Basic | Last commit was 2 years ago | Python driver cassandra-driver-3.16.0
 
 \* The recommended way to handle these migrations would be through one simple app that controls the db migrations. 
    
@@ -426,6 +427,7 @@ Table Output:
 **Prerequisites:** 
 
 * A running instance of [Apache Cassandra](http://cassandra.apache.org/)
+* You have node and npm installed.
 * You have run this on your cassandra db:
 
 ```
@@ -447,3 +449,45 @@ Not installing tool globally:
 Table Output:
 
 ![Schema Version Table Example](https://raw.githubusercontent.com/ubirch/ubirch-cassandra-eval/master/readmeAssets/node-cassandra-schema-version.jpg "Schema Version Table Example")
+
+
+### How to run https://github.com/o19s/trireme/
+
+**Prerequisites:** 
+
+* A running instance of [Apache Cassandra](http://cassandra.apache.org/)
+* python pip: 'sudo apt install python-pip'
+* setuptools: 'pip install setuptools'
+* Library itself: 'pip install trireme'
+* Python invoke: 'sudo apt install python-invoke'
+
+_Tests_
+
+You can run the tests by following the next instructions:
+
+**Note**
+ 
+ * For some reason, when following the instructions on its page, the commands that are issued fail with a 'did not receive all required positional arguments!'. 
+ The way I managed to work around was through inspecting the command with the help command like this ' inv --help trireme.setup' and realizing that a '-c' was missing. 
+ But I'm not sure what this flag does. I just added a dummy value and seemed to have work, e.g: inv trireme.setup -c db_test.
+  
+ * It's a bit cumbersome to work with, but once you get it, you can get through well.
+ * After running migrate command, it creates a schema.cql in the db folder.
+ * The configuration for solr seems to be mandatory, removing its config key, throws an error.
+ * The timestamp naming seems very nice, very rails-like.
+
+Checkout Cassandra commands [here](https://github.com/o19s/trireme/#cassandra). 
+
+```
+1. cd into externalMigrationTools/python/trireme
+2. inv trireme.cassandra.create -c db_test
+3. inv trireme.cassandra.migrate -c db_test
+4. check the migration table.
+5. * You may to run 'inv trireme.cassandra.drop -c db_test'
+
+* It might time out, I guess this is something that can be setup in cqsl.
+```
+
+Table Output:
+
+![Migration Table Example](https://raw.githubusercontent.com/ubirch/ubirch-cassandra-eval/master/readmeAssets/trireme_migration_table_example.jpg "Migration Table Example")
