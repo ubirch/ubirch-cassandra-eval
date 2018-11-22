@@ -15,7 +15,8 @@ lazy val global = project
     common,
     alpakka,
     quill,
-    phantom
+    phantom,
+    migrationTools
   )
 
 lazy val common = project
@@ -61,36 +62,49 @@ lazy val phantom = project
     common
   )
 
+lazy val migrationTools = project
+  .settings(
+    name := "migration-tools",
+    settings,
+    libraryDependencies ++= commonDependencies ++ Seq(
+      dependencies.cassandraMig,
+      dependencies.cassandreDriver
+    )
+  )
+  .dependsOn(
+    common
+  )
+
 // DEPENDENCIES
 
 lazy val dependencies =
   new {
     val logbackV          = "1.2.3"
-    val scalaLoggingV     = "3.7.2"
-    val slf4jV            = "1.7.25"
     val scalatestV        = "3.0.5"
     val quillV            = "2.6.0"
     val alpakkaCassandraV = "1.0-M1"
     val phantomV          = "2.27.0"
-    val jodaTimeV         = "2.10.1"
+    val jodaTimeV         = "2.10"
+    val cassandraMigV     = "2.2.0"
+    val cassandraDriverV  = "3.6.0"
 
     //Basics
     val logback          = "ch.qos.logback"             % "logback-classic"                % logbackV
-    val scalaLogging     = "com.typesafe.scala-logging" %% "scala-logging"                 % scalaLoggingV
-    val slf4j            = "org.slf4j"                  % "jcl-over-slf4j"                 % slf4jV
     val scalatest        = "org.scalatest"              %% "scalatest"                     % scalatestV
     val jodaTime         = "joda-time"                  % "joda-time"                      % jodaTimeV
 
-    //Good stuff
+    //Cassandra Integration Tools
     val quill            = "io.getquill"                %% "quill-cassandra"               % quillV
     val alpakkaCassandra = "com.lightbend.akka"         %% "akka-stream-alpakka-cassandra" % alpakkaCassandraV
     val phantom          =  "com.outworkers"           %% "phantom-dsl"                   % phantomV
+
+    //DB Migration Tools
+    val cassandreDriver  = "com.datastax.cassandra" % "cassandra-driver-core" % cassandraDriverV
+    val cassandraMig     = "org.cognitor.cassandra" % "cassandra-migration" % cassandraMigV
   }
 
 lazy val commonDependencies = Seq(
   dependencies.logback,
-  dependencies.scalaLogging,
-  dependencies.slf4j,
   dependencies.scalatest  % "test",
   dependencies.jodaTime
 )

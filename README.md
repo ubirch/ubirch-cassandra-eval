@@ -1,7 +1,20 @@
 # ubirch-cassandra-eval
 Evaluation of Cassandra and Scala
 
-###TL;TR
+Integration Tools
+
+* [Getting Started](#getting-started)
+
+* [Alpakka](#alpakka-cassandra-connector)
+
+* [Quill](#quill)
+
+* [Phantom](#phantom)
+
+[DB migrations management](#db-migrations-management)
+
+
+### TL;TR
 
 Technology | Documentation  | Licence | Case Class Support | Streams Support | Async Support | Scala-like Idioms
 ------------ | ------------- | ------------- | ------------- | ------------- | -------------  | -------------  
@@ -173,10 +186,7 @@ insert into events_by_cat (id, principal, category, event_source_service, device
 insert into events_by_cat (id, principal, category, event_source_service, device_id, year, month, day, hour, minute, second, milli, created, updated) values (now(), 'MunichRE', 'Validate', 'Avatar-Service', 41245902-69a0-450c-8d37-78e34f0e6760, 2018, 10, 1, 9, 15, 0, 0, toUnixTimestamp(now()), toUnixTimestamp(now()));
 insert into events_by_cat (id, principal, category, event_source_service, device_id, year, month, day, hour, minute, second, milli, created, updated) values (now(), 'MunichRE', 'Anchor', 'Avatar-Service', 41245902-69a0-450c-8d37-78e34f0e6760, 2018, 11, 1, 9, 17, 0, 0, toUnixTimestamp(now()), toUnixTimestamp(now()));
 insert into events_by_cat (id, principal, category, event_source_service, device_id, year, month, day, hour, minute, second, milli, created, updated) values (now(), 'MunichRE', 'Validate', 'Avatar-Service', 41245902-69a0-450c-8d37-78e34f0e6760, 2018, 11, 2, 11, 15, 0, 0, toUnixTimestamp(now()), toUnixTimestamp(now()));
-insert into events_by_cat (id, principal, category, event_source_service, device_id, year, month, day, hour, minute, second, milli, created, updated) values (now(), 'RMunichRET', 'Anchor', 'Avatar-Service', 41245902-69a0-450c-8d37-78e34f0e6760, 2018, 11, 2, 11, 17, 0, 0, toUnixTimestamp(now()), toUnixTimestamp(now()));
-
-  
-  
+insert into events_by_cat (id, principal, category, event_source_service, device_id, year, month, day, hour, minute, second, milli, created, updated) values (now(), 'RMunichRET', 'Anchor', 'Avatar-Service', 41245902-69a0-450c-8d37-78e34f0e6760, 2018, 11, 2, 11, 17, 0, 0, toUnixTimestamp(now()), toUnixTimestamp(now()));  
 ```
 
 **Notes:**
@@ -230,6 +240,80 @@ queries can return values that are not part of the db.
     This means that we could probably use the same options as supported in the [Cluster Builder](https://docs.datastax.com/en/drivers/java/3.1/com/datastax/driver/core/Cluster.Builder.html).
     
 2. How can different versions of the same table be handled?
+   
+   The way we believe could be a viable option to handle different version of the same table can be found in the test _com.ubirch.QuillDifferentTableVersionsSpec_
+   
+   The general idea is:
+   
+   * There's a general case class that represents the table.
+   
+   ```
+   case class Event(
+       id: UUID,
+       principal: String,
+       category: String,
+       eventSourceService: String,
+       deviceId: UUID,
+       year: Int,
+       month: Int,
+       day: Int,
+       hour: Int,
+       minute: Int,
+       second: Int,
+       milli: Int,
+       created: Date,
+       updated: Date)
+   ```  
+   
+   * We define a trait with one value that represents the table schema where we point at the table we need.
+  
+   ```
+     trait TablePointer[T] {
+       implicit val eventSchemaMeta: SchemaMeta[T]
+     }
+   ```
+ 
+   * Then for every specific table (version), there's an object with its own queries, inserts, etc. that extends from the trait above mentioned
+   
+   ```
+     object EventsByCat extends TablePointer[Event] {
+   
+       implicit val eventSchemaMeta = schemaMeta[Event]("events_by_cat")
+   
+       def selectAll(implicit sm: SchemaMeta[Event]) = quote(query[Event])
+   
+       def byCatAndEventSourceAndYearAndMonth(category: String, eventSourceService: String, date: DateTime) = quote {
+         query[Event]
+           .filter(_.category == lift(category))
+           .filter(_.eventSourceService == lift(eventSourceService))
+           .filter(_.year == lift(date.year().get()))
+           .filter(_.month == lift(date.monthOfYear().get()))
+       }
+   
+       def byCatAndEventSourceAndYearAndMonthAndDay(category: String, eventSourceService: String, date: DateTime) = quote {
+         query[Event]
+           .filter(_.category == lift(category))
+           .filter(_.eventSourceService == lift(eventSourceService))
+           .filter(_.year == lift(date.year().get()))
+           .filter(_.month == lift(date.monthOfYear().get()))
+           .filter(_.day == lift(date.dayOfMonth().get()))
+       }
+   
+       def byCatAndEventSourceAndYearAndMonthAndDayAndDeviceId(category: String, eventSourceService: String, date: DateTime, deviceId: UUID) = quote {
+         query[Event]
+           .filter(_.category == lift(category))
+           .filter(_.eventSourceService == lift(eventSourceService))
+           .filter(_.year == lift(date.year().get()))
+           .filter(_.month == lift(date.monthOfYear().get()))
+           .filter(_.day == lift(date.dayOfMonth().get()))
+           .filter(_.hour == lift(date.hourOfDay().get()))
+           .filter(_.deviceId == lift(deviceId))
+   
+       }
+   
+     }
+   ```    
+   
 3. What is the recommended way to manage the cassandra context throughout your models.?
     
     An interesting option is probably DI.
@@ -312,6 +396,14 @@ You can run all tests by following the next instructions:
 ## DB migrations management
 
 1. https://medium.com/cobli/the-best-way-to-manage-schema-migrations-in-cassandra-92a34c834824
+
+2. https://github.com/patka/cassandra-migration
+
+    Technology | Execution Mode | Has Migration folder | Incremental File Nomenclature (e.g 1.cql, 2.cql, ..., n.cql) | Filename-based order | cql statements support  
+    ---------- | -------------- | ---------------------| ------------------------------------------------------------ | -------------------- | ---------------------- |     
+    https://github.com/patka/cassandra-migration |  Migration Execution code needs to be put somewhere in the app when it boots | Yes | Yes | Yes | Yes
+    https://github.com/Contrast-Security-OSS/cassandra-migration |
+    https://github.com/smartcat-labs/cassandra-migration-tool-java |
 
 
 
