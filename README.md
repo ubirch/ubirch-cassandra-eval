@@ -399,7 +399,7 @@ Technology | Language | Execution Mode | Has Migration folder | Incremental File
 https://github.com/patka/cassandra-migration | Java | * Migration Execution code needs to be put somewhere in the app when it boots | Yes | Yes | Yes | Yes | Basic | Last commit was 4 months ago: Seems like they are getting ready for a new cycle | 3.X  
 https://github.com/Contrast-Security-OSS/cassandra-migration | Java | * Migration Execution code needs to be put somewhere in the app when it boots. It also has a java-based CLI| Yes | Yes | Yes | Yes | Basic | Last commit was 3 years ago: **Red flag** | 2.1: Found version conflict(s) in library dependencies; some are suspected to be binary incompatible 
 https://github.com/smartcat-labs/cassandra-migration-tool-java | Java | * Migration Execution code needs to be put somewhere in the app when it boots. When using the moving data feature, that could take a lot of time. This feature is interesting, but I'd recommend and independent app to do this. | Yes | No | No | Yes | Basic | Last commit was 2 years ago: **Red flag** | 3.1: dependency conflicts, but solved
-https://github.com/Cobliteam/cassandra-migrate | Python | It's a CLI | Yes | Yes | Yes | Yes | Basic | Last commit was 1 year ago | Uses the Python driver
+https://github.com/Cobliteam/cassandra-migrate | Python | It's a CLI | Yes | Yes | Yes | Yes | Basic | Last commit was 1 year ago | Python driver: cassandra-driver-3.16.0 
 https://github.com/joeledwards/node-cassandra-migration | Javascript | It's a CLI | Yes | Yes | Yes | Yes | Basic | Last commit was 5 months ago | Uses the Javascript driver
 https://github.com/o19s/trireme/ | Python | It's a CLI | Yes | Yes | Yes | Yes | Basic | Last commit was 2 years ago | Python driver cassandra-driver-3.16.0
 
@@ -456,16 +456,18 @@ Table Output:
 **Prerequisites:** 
 
 * A running instance of [Apache Cassandra](http://cassandra.apache.org/)
+* Cqsl should also be installed
 * python pip: 'sudo apt install python-pip'
 * setuptools: 'pip install setuptools'
 * Library itself: 'pip install trireme'
+* Don't forget to add 'export PATH=~/.local/bin:$PATH' to your PATH
 * Python invoke: 'sudo apt install python-invoke'
 
 _Tests_
 
 You can run the tests by following the next instructions:
 
-**Note**
+**Notes**
  
  * For some reason, when following the instructions on its page, the commands that are issued fail with a 'did not receive all required positional arguments!'. 
  The way I managed to work around was through inspecting the command with the help command like this ' inv --help trireme.setup' and realizing that a '-c' was missing. 
@@ -475,6 +477,7 @@ You can run the tests by following the next instructions:
  * After running migrate command, it creates a schema.cql in the db folder.
  * The configuration for solr seems to be mandatory, removing its config key, throws an error.
  * The timestamp naming seems very nice, very rails-like.
+ * You don't have to have created the keyspace in advance. The create commands takes care of it.
 
 Checkout Cassandra commands [here](https://github.com/o19s/trireme/#cassandra). 
 
@@ -491,3 +494,37 @@ Checkout Cassandra commands [here](https://github.com/o19s/trireme/#cassandra).
 Table Output:
 
 ![Migration Table Example](https://raw.githubusercontent.com/ubirch/ubirch-cassandra-eval/master/readmeAssets/trireme_migration_table_example.jpg "Migration Table Example")
+
+
+### How to run https://github.com/Cobliteam/cassandra-migrate
+
+**Prerequisites:** 
+
+* A running instance of [Apache Cassandra](http://cassandra.apache.org/)
+* python pip: 'sudo apt install python-pip'
+* Don't forget to add 'export PATH=~/.local/bin:$PATH' to your PATH
+* setuptools: 'pip install setuptools'
+* Library itself: 'pip install cassandra-migrate'
++ You have run the following script on you db:
+
+```
+ CREATE KEYSPACE python_cassandra_migrate_test WITH replication = {'class': 'SimpleStrategy','replication_factor': '1'};
+```
+
+_Tests_
+
+You can run the tests by following the next instructions:
+
+**Notes**
+  
+```
+1. cd into externalMigrationTools/python/cassandraMigrate
+2. cassandra-migrate -H 127.0.0.1 -p 9042 baseline
+3. cassandra-migrate -H 127.0.0.1 -p 9042 status
+4. cassandra-migrate -H 127.0.0.1 -p 9042 migrate
+5. cassandra-migrate -H 127.0.0.1 -p 9042 status
+```
+
+Table Output:
+
+![Database Migration Table Example](https://raw.githubusercontent.com/ubirch/ubirch-cassandra-eval/master/readmeAssets/cassandra-migrate-database-migrations-example.jpg "Database Migrations Table Example")
