@@ -390,6 +390,7 @@ The available test classes are:
 1. _com.ubirch.QuillOpsSpec_: Plays with basic algebraic operators.   
 2. _com.ubirch.QuillSpec_: Something like above, but simpler.
 3. _com.ubirch.QuillDifferentTableVersionsSpec_: Shows how to have different versions of the same table
+4. _com.ubirch.QuillMirrorSpec_: Makes sure that select and insert queries use the correct table version and spits out the correct cql.
 
 ## Phantom
 
