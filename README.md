@@ -16,11 +16,44 @@ Integration Tools
 
 ### TL;TR
 
+_High-level Connectors_
+
 Technology | Documentation  | Licence | Case Class Support | Streams Support | Async Support | Scala-like Idioms
 ------------ | ------------- | ------------- | ------------- | ------------- | -------------  | -------------  
 Alpakka | OK | Open Source: Apache 2 License | Needs explicit binding | Built on top of Akka-Streams | Yes | Yes
 Quill | OK | Open Source: Apache 2 License | Out of the box support | Through Monix Observables | Yes | Yes
 Phantom | OK |  Apache V2 License. Other Components are also [licenced](https://github.com/outworkers/phantom#license-and-copyright) (phantom-pro) | Supports it but needs explicit table class definition |  play-iteratees | Yes | Almost
+
+_DB Migration Tools_
+
+Technology | Language | Execution Mode | Has Migration folder | Incremental File Nomenclature (e.g 1.cql, 2.cql, ..., n.cql) | Filename-based order | cql statements support | Documentation | Heartbeat | Driver Version Dep.    
+---------- | -------| -------------- | ---------------------| ------------------------------------------------------------ | -------------------- | ---------------------- | ------------  |  ---------- | ---------- 
+https://github.com/patka/cassandra-migration | Java | * Migration Execution code needs to be put somewhere in the app when it boots | Yes | Yes | Yes | Yes | Basic | Last commit was 4 months ago: Seems like they are getting ready for a new cycle | 3.X 
+https://github.com/Contrast-Security-OSS/cassandra-migration | Java | * Migration Execution code needs to be put somewhere in the app when it boots. It also has a java-based CLI| Yes | Yes | Yes | Yes | Basic | Last commit was 3 years ago: **Red flag** | 2.1: Found version conflict(s) in library dependencies; some are suspected to be binary incompatible 
+https://github.com/smartcat-labs/cassandra-migration-tool-java | Java | * Migration Execution code needs to be put somewhere in the app when it boots. When using the moving data feature, that could take a lot of time. This feature is interesting, but I'd recommend and independent app to do this. | Yes | No | No | Yes | Basic | Last commit was 2 years ago: **Red flag** | 3.1: dependency conflicts, but solved 
+https://github.com/Cobliteam/cassandra-migrate | Python | It's a CLI | Yes | Yes | Yes | Yes | Basic | Last commit was 1 year ago | Python driver: cassandra-driver-3.16.0 
+https://github.com/joeledwards/node-cassandra-migration | Javascript | It's a CLI | Yes | Yes | Yes | Yes | Basic | Last commit was 5 months ago | Uses the Javascript driver 
+https://github.com/o19s/trireme/ | Python | It's a CLI | Yes | Yes | Yes | Yes | Basic | Last commit was 2 years ago | Python driver cassandra-driver-3.16.0
+
+\* The recommended way to handle these migrations would be through one simple app that controls the db migrations.
+
+*Notes*
+
+* Quill seems to fit well and easily as far as usage and configuration.
+* The db migrations tools that fit well and are maintained more regularly are:
+
+    * https://github.com/Cobliteam/cassandra-migrate
+    * https://github.com/patka/cassandra-migration
+    
+  These two options have:
+  
+    - [X] Folder with something like 1.cql, 2.cql, …
+    - [X] Migration Table
+        - [X] Informative Tables with checksums and order/version and timestamps.
+    - [X] Order is defined by sorting filenames
+    - [X] CQSL statements support in .cql files
+
+    
 
 ## Getting Started
 
@@ -392,18 +425,7 @@ You can run all tests by following the next instructions:
 4. Run 'sbt test'
 ```
 
-## DB migrations management
-
-Technology | Language | Execution Mode | Has Migration folder | Incremental File Nomenclature (e.g 1.cql, 2.cql, ..., n.cql) | Filename-based order | cql statements support | Documentation | Heartbeat | Driver Version Dep.  
----------- | -------| -------------- | ---------------------| ------------------------------------------------------------ | -------------------- | ---------------------- | ------------  |  ---------- | ---------- 
-https://github.com/patka/cassandra-migration | Java | * Migration Execution code needs to be put somewhere in the app when it boots | Yes | Yes | Yes | Yes | Basic | Last commit was 4 months ago: Seems like they are getting ready for a new cycle | 3.X  
-https://github.com/Contrast-Security-OSS/cassandra-migration | Java | * Migration Execution code needs to be put somewhere in the app when it boots. It also has a java-based CLI| Yes | Yes | Yes | Yes | Basic | Last commit was 3 years ago: **Red flag** | 2.1: Found version conflict(s) in library dependencies; some are suspected to be binary incompatible 
-https://github.com/smartcat-labs/cassandra-migration-tool-java | Java | * Migration Execution code needs to be put somewhere in the app when it boots. When using the moving data feature, that could take a lot of time. This feature is interesting, but I'd recommend and independent app to do this. | Yes | No | No | Yes | Basic | Last commit was 2 years ago: **Red flag** | 3.1: dependency conflicts, but solved
-https://github.com/Cobliteam/cassandra-migrate | Python | It's a CLI | Yes | Yes | Yes | Yes | Basic | Last commit was 1 year ago | Python driver: cassandra-driver-3.16.0 
-https://github.com/joeledwards/node-cassandra-migration | Javascript | It's a CLI | Yes | Yes | Yes | Yes | Basic | Last commit was 5 months ago | Uses the Javascript driver
-https://github.com/o19s/trireme/ | Python | It's a CLI | Yes | Yes | Yes | Yes | Basic | Last commit was 2 years ago | Python driver cassandra-driver-3.16.0
-
-\* The recommended way to handle these migrations would be through one simple app that controls the db migrations. 
+## DB migrations management  
    
 ### How to run https://github.com/patka/cassandra-migration
 
@@ -418,7 +440,7 @@ You can run the tests by following the next instructions:
 4. Run 'testOnly com.ubirch.CassandraMigration'
 ```
 
-Table Output:
+Table Output (Example):
 
 ![Schema Migration Table Example](https://raw.githubusercontent.com/ubirch/ubirch-cassandra-eval/master/readmeAssets/cassandra-migration-example.jpg "Schema Migration Table Example")
 
