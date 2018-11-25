@@ -16,7 +16,8 @@ lazy val global = project
     alpakka,
     quill,
     phantom,
-    migrationTools
+    migrationTools,
+    di
   )
 
 lazy val common = project
@@ -77,6 +78,23 @@ lazy val migrationTools = project
   .dependsOn(
     common
   )
+
+
+lazy val di = project
+  .settings(
+    name := "DI",
+    settings,
+    libraryDependencies ++= commonDependencies ++ Seq(
+      dependencies.quill,
+      dependencies.javax,
+      dependencies.guice
+
+    )
+  )
+  .dependsOn(
+    common
+  )
+
 
 // DEPENDENCIES
 
