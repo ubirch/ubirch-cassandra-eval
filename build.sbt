@@ -43,7 +43,10 @@ lazy val quill = project
     name := "quill",
     settings,
     libraryDependencies ++= commonDependencies ++ Seq(
-      dependencies.quill
+      dependencies.quill,
+      dependencies.javax,
+      dependencies.guice
+
     )
   )
   .dependsOn(
@@ -87,25 +90,28 @@ lazy val dependencies =
     val jodaTimeV         = "2.10"
     val cassandraMigV     = "2.2.0"
     val cassandraDriverV  = "3.6.0"
+    val guiceV            = "4.2.2"
+    val javaxV            = "1"
+
 
     //Basics
-    val logback          = "ch.qos.logback"             % "logback-classic"                % logbackV
-    val scalatest        = "org.scalatest"              %% "scalatest"                     % scalatestV
-    val jodaTime         = "joda-time"                  % "joda-time"                      % jodaTimeV
-
+    val logback          = "ch.qos.logback" % "logback-classic" % logbackV
+    val scalatest        = "org.scalatest" %% "scalatest" % scalatestV
+    val jodaTime         = "joda-time" % "joda-time" % jodaTimeV
     //Cassandra Integration Tools
-    val quill            = "io.getquill"                %% "quill-cassandra"               % quillV
-    val alpakkaCassandra = "com.lightbend.akka"         %% "akka-stream-alpakka-cassandra" % alpakkaCassandraV
-    val phantom          =  "com.outworkers"           %% "phantom-dsl"                   % phantomV
-
-    //DB Migration Tools
+    val quill            = "io.getquill" %% "quill-cassandra" % quillV
+    val alpakkaCassandra = "com.lightbend.akka" %% "akka-stream-alpakka-cassandra" % alpakkaCassandraV
+    val phantom          = "com.outworkers" %% "phantom-dsl" % phantomV
     val cassandreDriver  = "com.datastax.cassandra" % "cassandra-driver-core" % cassandraDriverV
     val cassandraMig     = "org.cognitor.cassandra" % "cassandra-migration" % cassandraMigV
+    //DB Migration Tools
+    val guice            = "com.google.inject" % "guice" % guiceV
+    val javax            = "javax.inject" % "javax.inject" % javaxV
   }
 
 lazy val commonDependencies = Seq(
   dependencies.logback,
-  dependencies.scalatest  % "test",
+  dependencies.scalatest % "test",
   dependencies.jodaTime
 )
 

@@ -40,7 +40,7 @@ trait EventDAOBase {
 
     implicit val eventSchemaMeta = schemaMeta[Event]("events")
 
-    def selectAll(implicit sm: SchemaMeta[Event]) = quote(query[Event])
+    def selectAll = quote(query[Event])
 
     def byPrincipalAndCategory(principal: String, category: String) = quote {
       query[Event]
@@ -78,7 +78,7 @@ trait EventDAOBase {
 
     implicit val eventSchemaMeta = schemaMeta[Event]("events_by_cat")
 
-    def selectAll(implicit sm: SchemaMeta[Event]) = quote(query[Event])
+    def selectAll = quote(query[Event])
 
     def byCatAndEventSourceAndYearAndMonth(category: String, eventSourceService: String, date: DateTime) = quote {
       query[Event]
