@@ -98,6 +98,8 @@ trait EventsByCatQueries extends TablePointer[Event] {
 
   implicit val eventSchemaMeta = schemaMeta[Event]("events_by_cat")
 
+  //There represent query descriptions only
+
   def selectAllQ = quote(query[Event])
 
   def byCatAndEventSourceAndYearAndMonthQ(category: String, eventSourceService: String, date: DateTime) = quote {
@@ -137,6 +139,8 @@ class EventsByCat @Inject() (val connectionService: ConnectionService) extends E
   val db = connectionService.context
 
   import db._
+
+  //These actually run the queries.
 
   def selectAll = run(selectAllQ)
 

@@ -13,6 +13,8 @@ Integration Tools
 
 [DB migrations management](#db-migrations-management)
 
+[Guice DI and Quill Context](#guice-di-and-quill-context)
+
 
 ### TL;TR
 
@@ -313,7 +315,7 @@ queries can return values that are not part of the db.
    
        implicit val eventSchemaMeta = schemaMeta[Event]("events_by_cat")
    
-       def selectAll(implicit sm: SchemaMeta[Event]) = quote(query[Event])
+       def selectAll = quote(query[Event])
    
        def byCatAndEventSourceAndYearAndMonth(category: String, eventSourceService: String, date: DateTime) = quote {
          query[Event]
@@ -350,6 +352,8 @@ queries can return values that are not part of the db.
 3. What is the recommended way to manage the cassandra context throughout your models.?
     
     An interesting option is probably DI.
+    
+    Runtime Dependency Injection via Guice: See [Here](#guice-di-and-quill-context)
     
 4. Does Quill take care of closing the connections or does an explicit close needs to be done?
 
@@ -391,6 +395,7 @@ The available test classes are:
 2. _com.ubirch.QuillSpec_: Something like above, but simpler.
 3. _com.ubirch.QuillDifferentTableVersionsSpec_: Shows how to have different versions of the same table
 4. _com.ubirch.QuillMirrorSpec_: Makes sure that select and insert queries use the correct table version and spits out the correct cql.
+5. _com.ubirch.ClusterDISpec_: Quick test on how to use Guice to control the db connection.
 
 ## Phantom
 
@@ -528,7 +533,7 @@ Table Output:
 * Don't forget to add 'export PATH=~/.local/bin:$PATH' to your PATH
 * setuptools: 'pip install setuptools'
 * Library itself: 'pip install cassandra-migrate'
-+ You have run the following script on you db:
+* You have run the following script on you db:
 
 ```
  CREATE KEYSPACE python_cassandra_migrate_test WITH replication = {'class': 'SimpleStrategy','replication_factor': '1'};
@@ -551,3 +556,141 @@ You can run the tests by following the next instructions:
 Table Output:
 
 ![Database Migration Table Example](https://raw.githubusercontent.com/ubirch/ubirch-cassandra-eval/master/readmeAssets/cassandra-migrate-database-migrations-example.jpg "Database Migrations Table Example")
+
+## Guice-DI and Quill Context
+
+**Description**: Assembles a Quill set of queries based on Guice. 
+
+**Prerequisites:** 
+
+Same as in Quill. See [here](#quill).
+
+
+
+### How to run
+
+_Test_
+
+You can run all tests by following the next instructions:
+
+```
+1. Start your Cassandra.
+2. Run 'sbt'
+3. Select project by running 'project di'
+4. Run 'sbt testOnly com.ubirch.ConnectionServiceSpec'
+```  
+
+**Notes** 
+
+* At first glance all seem to work very well, even evicted warning for having used most recent Guice. 
+  The datastax driver has a dependency on an older Guice version.
+  
+* Services can be injected to parts of the code where needed in a very graceful manner.
+
+* Maybe a but is that as Guice is a runtime DI, and the compiled queries can't be translated into CQL until all is wired.
+
+* Here's an example: 
+
+```
+trait ClusterService {
+  val poolingOptions: PoolingOptions
+  val cluster: Cluster
+}
+
+@Singleton
+class DefaultClusterService extends ClusterService {
+
+  override val poolingOptions = new PoolingOptions
+
+  override val cluster = Cluster.builder
+    .addContactPoint("127.0.0.1")
+    .withPort(9042)
+    .withPoolingOptions(poolingOptions)
+    .build
+
+}
+
+trait ConnectionService {
+  type N <: NamingStrategy
+  val context: CassandraAsyncContext[N]
+
+}
+
+@Singleton
+class DefaultConnectionService @Inject() (clusterService: ClusterService) extends ConnectionService {
+
+  override type N = SnakeCase.type
+
+  override val context =
+    new CassandraAsyncContext(
+      SnakeCase,
+      clusterService.cluster,
+      "db",
+      1000)
+
+}
+
+trait EventsByCatQueries extends TablePointer[Event] {
+
+  import db._
+
+  implicit val eventSchemaMeta = schemaMeta[Event]("events_by_cat")
+
+  //There represent query descriptions only
+
+  def selectAllQ = quote(query[Event])
+
+  def byCatAndEventSourceAndYearAndMonthQ(category: String, eventSourceService: String, date: DateTime) = quote {
+    query[Event]
+      .filter(_.category == lift(category))
+      .filter(_.eventSourceService == lift(eventSourceService))
+      .filter(_.year == lift(date.year().get()))
+      .filter(_.month == lift(date.monthOfYear().get()))
+  }
+
+  def byCatAndEventSourceAndYearAndMonthAndDayQ(category: String, eventSourceService: String, date: DateTime) = quote {
+    query[Event]
+      .filter(_.category == lift(category))
+      .filter(_.eventSourceService == lift(eventSourceService))
+      .filter(_.year == lift(date.year().get()))
+      .filter(_.month == lift(date.monthOfYear().get()))
+      .filter(_.day == lift(date.dayOfMonth().get()))
+  }
+
+  def byCatAndEventSourceAndYearAndMonthAndDayAndDeviceIdQ(category: String, eventSourceService: String, date: DateTime, deviceId: UUID) = quote {
+    query[Event]
+      .filter(_.category == lift(category))
+      .filter(_.eventSourceService == lift(eventSourceService))
+      .filter(_.year == lift(date.year().get()))
+      .filter(_.month == lift(date.monthOfYear().get()))
+      .filter(_.day == lift(date.dayOfMonth().get()))
+      .filter(_.hour == lift(date.hourOfDay().get()))
+      .filter(_.deviceId == lift(deviceId))
+
+  }
+
+}
+
+@Singleton
+class EventsByCat @Inject() (val connectionService: ConnectionService) extends EventsByCatQueries {
+
+  val db = connectionService.context
+
+  import db._
+
+  //These actually run the queries.
+
+  def selectAll = run(selectAllQ)
+
+  def byCatAndEventSourceAndYearAndMonth(category: String, eventSourceService: String, date: DateTime) =
+    run(byCatAndEventSourceAndYearAndMonthQ(category, eventSourceService, date))
+
+  def byCatAndEventSourceAndYearAndMonthAndDay(category: String, eventSourceService: String, date: DateTime) =
+    run(byCatAndEventSourceAndYearAndMonthAndDayQ(category, eventSourceService, date))
+
+  def byCatAndEventSourceAndYearAndMonthAndDayAndDeviceId(category: String, eventSourceService: String, date: DateTime, deviceId: UUID) =
+    run(byCatAndEventSourceAndYearAndMonthAndDayAndDeviceIdQ(category, eventSourceService, date, deviceId))
+
+}
+```  
+
