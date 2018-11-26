@@ -87,7 +87,8 @@ lazy val di = project
     libraryDependencies ++= commonDependencies ++ Seq(
       dependencies.quill,
       dependencies.javax,
-      dependencies.guice
+      dependencies.guice,
+      dependencies.scalaLogging
 
     )
   )
@@ -101,6 +102,7 @@ lazy val di = project
 lazy val dependencies =
   new {
     val logbackV          = "1.2.3"
+    val scalaLoggingV     = "3.9.0"
     val scalatestV        = "3.0.5"
     val quillV            = "2.6.0"
     val alpakkaCassandraV = "1.0-M1"
@@ -114,6 +116,7 @@ lazy val dependencies =
 
     //Basics
     val logback          = "ch.qos.logback" % "logback-classic" % logbackV
+    val scalaLogging     = "com.typesafe.scala-logging" %% "scala-logging" % scalaLoggingV
     val scalatest        = "org.scalatest" %% "scalatest" % scalatestV
     val jodaTime         = "joda-time" % "joda-time" % jodaTimeV
     //Cassandra Integration Tools
