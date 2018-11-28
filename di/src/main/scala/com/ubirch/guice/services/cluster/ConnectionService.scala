@@ -1,8 +1,8 @@
-package com.ubirch.services.cluster
+package com.ubirch.guice.services.cluster
 
 import com.typesafe.config.Config
-import com.ubirch.services.ClusterService
-import com.ubirch.services.lifeCycle.Lifecycle
+import com.ubirch.guice.services.ClusterService
+import com.ubirch.guice.services.lifeCycle.Lifecycle
 import io.getquill.{ CassandraAsyncContext, NamingStrategy, SnakeCase }
 import javax.inject._
 

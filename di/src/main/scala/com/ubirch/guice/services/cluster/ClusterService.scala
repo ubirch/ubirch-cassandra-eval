@@ -1,17 +1,14 @@
-package com.ubirch.services
-
-import java.net.InetSocketAddress
+package com.ubirch.guice.services
 
 import com.datastax.driver.core.{ Cluster, PoolingOptions }
 import com.typesafe.config.Config
 import javax.inject._
-import collection.JavaConverters._
+
+import scala.collection.JavaConverters._
 
 trait ClusterConfigs {
   val contactPoints: List[String]
   val port: Int
-
-  def buildContactPoints = contactPoints.map(new InetSocketAddress(_, 9042))
 }
 
 trait ClusterService extends ClusterConfigs {

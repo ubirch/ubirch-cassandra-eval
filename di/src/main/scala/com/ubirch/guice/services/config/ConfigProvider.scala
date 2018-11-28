@@ -1,7 +1,6 @@
-package com.ubirch.services.config
+package com.ubirch.guice.services.config
 
-import com.typesafe.config.Config
-import com.typesafe.config.ConfigFactory
+import com.typesafe.config.{ Config, ConfigFactory }
 import javax.inject._
 
 @Singleton

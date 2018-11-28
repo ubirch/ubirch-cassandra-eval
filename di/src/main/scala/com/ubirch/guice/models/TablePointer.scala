@@ -1,4 +1,4 @@
-package com.ubirch.models
+package com.ubirch.guice.models
 
 import io.getquill.context.cassandra.CassandraContext
 import io.getquill.context.cassandra.encoding.{ Decoders, Encoders }

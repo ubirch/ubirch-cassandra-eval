@@ -1,8 +1,4 @@
-/*
- * Copyright (C) 2009-2018 Lightbend Inc. <https://www.lightbend.com>
- */
-
-package com.ubirch.services.lifeCycle
+package com.ubirch.guice.services.lifeCycle
 
 import java.util.concurrent.ConcurrentLinkedDeque
 
@@ -10,8 +6,8 @@ import com.typesafe.scalalogging.LazyLogging
 import javax.inject.{ Inject, Singleton }
 
 import scala.annotation.tailrec
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 trait Lifecycle {
 
@@ -22,7 +18,7 @@ trait Lifecycle {
 }
 
 @Singleton
-class DefaultLifecycle @Inject() ()
+class DefaultLifecycle
   extends Lifecycle
   with LazyLogging {
 
@@ -46,4 +42,28 @@ class DefaultLifecycle @Inject() ()
     logger.info("Running life cycle hooks...")
     clearHooks()
   }
+}
+
+trait JVMHook {
+  protected def registerShutdownHooks(): Unit
+}
+
+@Singleton
+class DefaultJVMHook @Inject() (lifecycle: Lifecycle) extends JVMHook with LazyLogging {
+
+  protected def registerShutdownHooks() {
+
+    Runtime.getRuntime.addShutdownHook(new Thread() {
+      override def run(): Unit = {
+        val t = lifecycle.stop()
+
+        Thread.sleep(5000) //Waiting 5 secs
+        logger.info("Bye bye, see you later...")
+      }
+    })
+
+  }
+
+  registerShutdownHooks()
+
 }

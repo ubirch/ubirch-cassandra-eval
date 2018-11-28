@@ -1,13 +1,12 @@
-package com.ubirch.models
+package com.ubirch.guice.models
 
 import java.util.{ Date, UUID }
 
-import com.ubirch.services.cluster.ConnectionService
+import com.ubirch.guice.services.cluster.ConnectionService
 import javax.inject._
 import org.joda.time.DateTime
 
-//TODO: We need to inject this
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.ExecutionContext
 
 case class Event(
   id: UUID,
@@ -68,7 +67,7 @@ trait EventsQueries extends TablePointer[Event] {
 }
 
 @Singleton
-class Events @Inject() (val connectionService: ConnectionService) extends EventsQueries {
+class Events @Inject() (val connectionService: ConnectionService)(implicit ec: ExecutionContext) extends EventsQueries {
 
   val db = connectionService.context
 
@@ -134,7 +133,7 @@ trait EventsByCatQueries extends TablePointer[Event] {
 }
 
 @Singleton
-class EventsByCat @Inject() (val connectionService: ConnectionService) extends EventsByCatQueries {
+class EventsByCat @Inject() (val connectionService: ConnectionService)(implicit ec: ExecutionContext) extends EventsByCatQueries {
 
   val db = connectionService.context
 

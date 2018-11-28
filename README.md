@@ -565,9 +565,23 @@ Table Output:
 
 Same as in Quill. See [here](#quill).
 
-
-
 ### How to run
+
+_Examples_
+
+You can run the examples by following these instructions:
+
+```
+1. Start your Cassandra.
+2. Run 'sbt'
+3. Select project by running 'project di'
+4. Run 'run'
+5. You will see the available options. Type the number you would like to see
+```  
+
+* There are these examples:
+
+_com.ubirch.guice.run_
 
 _Test_
 
@@ -587,46 +601,75 @@ You can run all tests by following the next instructions:
   
 * Services can be injected to parts of the code where needed in a very graceful manner.
 
+  Check the guice folder to check the available services, namely:
+  
+  * ClusterService
+  * ConnectionService
+  * ConfigProvider
+  * ExecutionProvider
+  * Lifecyle
+
 * Maybe a but is that as Guice is a runtime DI, and the compiled queries can't be translated into CQL until all is wired.
 
 * Here's an example: 
 
 ```
-trait ClusterService {
+trait ClusterConfigs {
+  val contactPoints: List[String]
+  val port: Int
+}
+
+trait ClusterService extends ClusterConfigs {
   val poolingOptions: PoolingOptions
   val cluster: Cluster
 }
 
 @Singleton
-class DefaultClusterService extends ClusterService {
+class DefaultClusterService @Inject() (config: Config) extends ClusterService {
 
-  override val poolingOptions = new PoolingOptions
+  val contactPoints: List[String] = config.getStringList("eventLog.cluster.contactPoints").asScala.toList
+  val port: Int = config.getInt("eventLog.cluster.port")
+
+  val poolingOptions = new PoolingOptions
 
   override val cluster = Cluster.builder
-    .addContactPoint("127.0.0.1")
-    .withPort(9042)
+    .addContactPoints(contactPoints: _*)
+    .withPort(port)
     .withPoolingOptions(poolingOptions)
     .build
 
 }
 
-trait ConnectionService {
+trait ConnectionServiceConfig {
+  val keyspace: String
+  val preparedStatementCacheSize: Int
+}
+
+trait ConnectionService extends ConnectionServiceConfig {
   type N <: NamingStrategy
   val context: CassandraAsyncContext[N]
 
 }
 
 @Singleton
-class DefaultConnectionService @Inject() (clusterService: ClusterService) extends ConnectionService {
+class DefaultConnectionService @Inject() (clusterService: ClusterService, config: Config, lifecycle: Lifecycle)
+  extends ConnectionService {
 
-  override type N = SnakeCase.type
+  val keyspace: String = config.getString("eventLog.cluster.keyspace")
+  val preparedStatementCacheSize: Int = config.getInt("eventLog.cluster.preparedStatementCacheSize")
+
+  type N = SnakeCase.type
 
   override val context =
     new CassandraAsyncContext(
       SnakeCase,
       clusterService.cluster,
-      "db",
-      1000)
+      keyspace,
+      preparedStatementCacheSize)
+
+  lifecycle.addStopHook { () =>
+    Future.successful(context.close())
+  }
 
 }
 
@@ -672,7 +715,7 @@ trait EventsByCatQueries extends TablePointer[Event] {
 }
 
 @Singleton
-class EventsByCat @Inject() (val connectionService: ConnectionService) extends EventsByCatQueries {
+class EventsByCat @Inject() (val connectionService: ConnectionService)(implicit ec: ExecutionContext) extends EventsByCatQueries {
 
   val db = connectionService.context
 

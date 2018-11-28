@@ -3,9 +3,9 @@ package com.ubirch
 import java.util.{ Date, UUID }
 
 import com.google.inject.Guice
-import com.ubirch.models.{ Event, Events, EventsByCat }
-import com.ubirch.services.ServiceBinder
-import com.ubirch.services.cluster.ConnectionService
+import com.ubirch.guice.models.{ Event, Events, EventsByCat }
+import com.ubirch.guice.services.ServiceBinder
+import com.ubirch.guice.services.cluster.ConnectionService
 import org.joda.time.DateTime
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{ BeforeAndAfterAll, BeforeAndAfterEach, MustMatchers, WordSpec }
