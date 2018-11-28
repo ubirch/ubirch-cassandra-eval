@@ -3,9 +3,8 @@ package com.ubirch.cdi.models
 import java.util.{ Date, UUID }
 
 import com.ubirch.cdi.services.cluster.DefaultConnectionService
+import com.ubirch.cdi.services.execution.ExecutionProvider
 import org.joda.time.DateTime
-
-import scala.concurrent.ExecutionContext.Implicits.global
 
 case class Event(
   id: UUID,
@@ -29,7 +28,7 @@ trait EventsQueries extends TablePointer[Event] {
 
   implicit val eventSchemaMeta = schemaMeta[Event]("events")
 
-  //There represent query descriptions only
+  //These represent query descriptions only
 
   def selectAllQ = quote(query[Event])
 
@@ -65,8 +64,7 @@ trait EventsQueries extends TablePointer[Event] {
 
 }
 
-object Events extends EventsQueries with DefaultConnectionService {
-
+trait EventsBase extends EventsQueries with DefaultConnectionService with ExecutionProvider {
   val db = context
 
   import db._
@@ -86,6 +84,15 @@ object Events extends EventsQueries with DefaultConnectionService {
 
   def byPrincipalAndCatAndYearAndMonthAndDay(principal: String, category: String, date: DateTime) =
     run(byPrincipalAndCatAndYearAndMonthAndDayQ(principal, category, date))
+
+}
+
+object Events extends EventsBase
+
+trait EventsWithNamespace {
+
+  def events = Events
+
 }
 
 trait EventsByCatQueries extends TablePointer[Event] {
@@ -94,7 +101,7 @@ trait EventsByCatQueries extends TablePointer[Event] {
 
   implicit val eventSchemaMeta = schemaMeta[Event]("events_by_cat")
 
-  //There represent query descriptions only
+  //These represent query descriptions only
 
   def selectAllQ = quote(query[Event])
 
@@ -129,7 +136,10 @@ trait EventsByCatQueries extends TablePointer[Event] {
 
 }
 
-object EventsByCat extends EventsByCatQueries with DefaultConnectionService {
+trait EventsByCatBase
+  extends EventsByCatQueries
+  with DefaultConnectionService
+  with ExecutionProvider {
 
   val db = context
 
@@ -147,5 +157,12 @@ object EventsByCat extends EventsByCatQueries with DefaultConnectionService {
 
   def byCatAndEventSourceAndYearAndMonthAndDayAndDeviceId(category: String, eventSourceService: String, date: DateTime, deviceId: UUID) =
     run(byCatAndEventSourceAndYearAndMonthAndDayAndDeviceIdQ(category, eventSourceService, date, deviceId))
+
+}
+
+object EventsByCat extends EventsByCatBase
+
+trait EventsByCatWithNamespace {
+  def eventsByCat = EventsByCat
 
 }

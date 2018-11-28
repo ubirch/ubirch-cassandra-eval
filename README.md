@@ -679,7 +679,7 @@ trait EventsByCatQueries extends TablePointer[Event] {
 
   implicit val eventSchemaMeta = schemaMeta[Event]("events_by_cat")
 
-  //There represent query descriptions only
+  //These represent query descriptions only
 
   def selectAllQ = quote(query[Event])
 

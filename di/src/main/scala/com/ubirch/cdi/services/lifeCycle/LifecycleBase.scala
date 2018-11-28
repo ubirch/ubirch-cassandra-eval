@@ -48,3 +48,30 @@ trait DefaultLifecycle extends LifecycleBase {
 
   def stop(): Future[_] = LifecycleProvider.stop()
 }
+
+trait DefaultLifecycleWithNamespace {
+  object lifecycle extends DefaultLifecycle
+}
+
+trait JVMHook {
+  protected def registerShutdownHooks(): Unit
+}
+
+trait DefaultJVMHook extends DefaultLifecycleWithNamespace with JVMHook with LazyLogging {
+
+  protected def registerShutdownHooks() {
+
+    Runtime.getRuntime.addShutdownHook(new Thread() {
+      override def run(): Unit = {
+        lifecycle.stop()
+
+        Thread.sleep(5000) //Waiting 5 secs
+        logger.info("Bye bye, see you later...")
+      }
+    })
+
+  }
+
+  registerShutdownHooks()
+
+}

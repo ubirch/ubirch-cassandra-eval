@@ -55,7 +55,7 @@ class DefaultJVMHook @Inject() (lifecycle: Lifecycle) extends JVMHook with LazyL
 
     Runtime.getRuntime.addShutdownHook(new Thread() {
       override def run(): Unit = {
-        val t = lifecycle.stop()
+        lifecycle.stop()
 
         Thread.sleep(5000) //Waiting 5 secs
         logger.info("Bye bye, see you later...")

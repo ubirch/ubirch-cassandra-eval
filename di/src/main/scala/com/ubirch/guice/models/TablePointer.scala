@@ -14,4 +14,5 @@ trait TablePointer[T] extends CassandraBase {
   import db._
 
   implicit val eventSchemaMeta: SchemaMeta[T]
+
 }
