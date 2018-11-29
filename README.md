@@ -15,6 +15,8 @@ Integration Tools
 
 [Guice DI and Quill Context](#guice-di-and-quill-context)
 
+[Macwire DI/Trait and Quill Context](#macwire-di-and-quill-context)
+
 
 ### TL;TR
 
@@ -559,7 +561,7 @@ Table Output:
 
 ## Guice-DI and Quill Context
 
-**Description**: Assembles a Quill set of queries based on Guice. 
+**Description**: Assembles a Quill set of queries based on Guice, maintaining one single instance of the db connection and with shutdown hooks.
 
 **Prerequisites:** 
 
@@ -591,7 +593,7 @@ You can run all tests by following the next instructions:
 1. Start your Cassandra.
 2. Run 'sbt'
 3. Select project by running 'project di'
-4. Run 'sbt testOnly com.ubirch.ConnectionServiceSpec'
+4. Run 'sbt testOnly com.ubirch.GuiceConnectionServiceSpec'
 ```  
 
 **Notes** 
@@ -735,5 +737,42 @@ class EventsByCat @Inject() (val connectionService: ConnectionService)(implicit 
     run(byCatAndEventSourceAndYearAndMonthAndDayAndDeviceIdQ(category, eventSourceService, date, deviceId))
 
 }
+```  
+
+## MacWire DI and Quill Context
+
+**Description**: Assembles a Quill set of queries based on MacWire and Traits, maintaining one single instance of the db connection and with shutdown hooks.
+
+**Prerequisites:** 
+
+Same as in Quill. See [here](#quill).
+
+### How to run
+
+_Examples_
+
+You can run the examples by following these instructions:
+
+```
+1. Start your Cassandra.
+2. Run 'sbt'
+3. Select project by running 'project di'
+4. Run 'run'
+5. You will see the available options. Type the number you would like to see
+```  
+
+* There are these examples:
+
+_com.ubirch.macwire.ImportedModule_
+
+_Test_
+
+You can run all tests by following the next instructions:
+
+```
+1. Start your Cassandra.
+2. Run 'sbt'
+3. Select project by running 'project di'
+4. Run 'sbt testOnly com.ubirch.MacwireConnectionServiceSpec'
 ```  
 
