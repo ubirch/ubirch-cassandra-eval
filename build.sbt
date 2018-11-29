@@ -89,8 +89,7 @@ lazy val di = project
       dependencies.javax,
       dependencies.guice,
       dependencies.scalaLogging
-
-    )
+    ) ++ dependencies.macwire
   )
   .dependsOn(
     common
@@ -128,6 +127,11 @@ lazy val dependencies =
     //DB Migration Tools
     val guice            = "com.google.inject" % "guice" % guiceV
     val javax            = "javax.inject" % "javax.inject" % javaxV
+    val macwire          = Seq(
+      "com.softwaremill.macwire" %% "macros" % "2.3.1" % "provided",
+      //"com.softwaremill.macwire" %% "macrosakka" % "2.3.1" % "provided",
+      "com.softwaremill.macwire" %% "util" % "2.3.1",
+      "com.softwaremill.macwire" %% "proxy" % "2.3.1")
   }
 
 lazy val commonDependencies = Seq(
