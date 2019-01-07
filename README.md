@@ -776,3 +776,12 @@ You can run all tests by following the next instructions:
 4. Run 'sbt testOnly com.ubirch.MacwireConnectionServiceSpec'
 ```  
 
+
+### Changing Cassandra with ScyllaDB
+
+By using ScyllaDB instead of Cassandra to run the tests, it was observed that
+all tests passed well.
+
+The only minor issue was when running the evolutions script on the db with
+[Cassandra Migrate](https://github.com/Cobliteam/cassandra-migrate), as it threw a warning
+about not supporting Light Weight Transactions.
