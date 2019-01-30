@@ -549,10 +549,14 @@ You can run the tests by following the next instructions:
   
 ```
 1. cd into externalMigrationTools/python/cassandraMigrate
-2. cassandra-migrate -H 127.0.0.1 -p 9042 baseline
-3. cassandra-migrate -H 127.0.0.1 -p 9042 status
-4. cassandra-migrate -H 127.0.0.1 -p 9042 migrate
-5. cassandra-migrate -H 127.0.0.1 -p 9042 status
+2. cassandra-migrate -H 127.0.0.1 -p 9042 status
+3. cassandra-migrate -H 127.0.0.1 -p 9042 migrate
+4. cassandra-migrate -H 127.0.0.1 -p 9042 status
+
+If the db already has stuff in it.
+You should probably baseline it before running new migrations.
+
+cassandra-migrate -H 127.0.0.1 -p 9042 baseline
 ```
 
 Table Output:
